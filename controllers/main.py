@@ -21,8 +21,6 @@ class PayzenController(http.Controller):
     def payzen_return(self, **post):
         request.registry['payment.transaction'].form_feedback(request.cr, SUPERUSER_ID, post, 'payzen',
                                                               context=request.context)
-        print request.cr
-        print post
         return_url = post.pop('return_url', '')
         if not return_url:
             data = '' + post.pop('ADD_RETURNDATA', '{}').replace("'", "\"")

@@ -21,8 +21,7 @@
 
                 <!-- customer info -->
                 <input type="hidden" name="vads_cust_name" t-att-value="tx_values['payzen_vads_cust_name']"/>
-                <input type="hidden" name="vads_cust_first_name"
-                       t-att-value="tx_values['payzen_vads_cust_first_name']"/>
+                <input type="hidden" name="vads_cust_first_name" t-att-value="tx_values['payzen_vads_cust_first_name']"/>
                 <input type="hidden" name="vads_cust_last_name" t-att-value="tx_values['payzen_vads_cust_last_name']"/>
                 <input type="hidden" name="vads_cust_address" t-att-value="tx_values['payzen_vads_cust_address']"/>
                 <input type="hidden" name="vads_cust_zip" t-att-value="tx_values['payzen_vads_cust_zip']"/>
@@ -31,14 +30,7 @@
                 <input type="hidden" name="vads_cust_country" t-att-value="tx_values['payzen_vads_cust_country']"/>
                 <input type="hidden" name="vads_cust_email" t-att-value="tx_values['payzen_vads_cust_email']"/>
                 <input type="hidden" name="vads_cust_phone" t-att-value="tx_values['payzen_vads_cust_phone']"/>
-                <!-- Shipping info
-                <input type="hidden" name="vads_ship_to_name" t-att-value="tx_values['payzen_vads_ship_to_name']"/>
-                <input type="hidden" name="vads_ship_to_street" t-att-value="tx_values['payzen_vads_ship_to_street']"/>
-                <input type="hidden" name="vads_ship_to_city" t-att-value="tx_values['payzen_vads_ship_to_city']"/>
-                <input type="hidden" name="vads_ship_to_zip" t-att-value="tx_values['payzen_vads_ship_to_zip']"/>
-                <input type="hidden" name="vads_ship_to_state" t-att-value="tx_values['payzen_vads_ship_to_state']"/>
-                <input type="hidden" name="vads_ship_to_phone_num" t-att-value="tx_values['payzen_vads_ship_to_phone_num']"/>
- -->
+
                 <!-- URLs -->
                 <input type='hidden' name='vads_url_return' t-att-value="tx_values.get('payzen_vads_url_return')"/>
 

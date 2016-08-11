@@ -11,10 +11,11 @@ from datetime import datetime
 
 _logger = logging.getLogger(__name__)
 
-currency_code = {'EUR': 978,
-                 'USD': 840,
-                 'CAD': 124,
-                 }
+currency_code = {
+    'EUR': 978,
+    'USD': 840,
+    'CAD': 124
+}
 
 
 class AcquirerPayzen(osv.Model):
@@ -63,14 +64,14 @@ class AcquirerPayzen(osv.Model):
             'payzen_vads_amount': int(tx_values['amount'] * 100),
             'payzen_vads_currency': currency_code.get(tx_values['currency'].name, 0),
             'payzen_vads_trans_date': datetime.utcnow().strftime("%Y%m%d%H%M%S"),
-            'payzen_vads_trans_id': '000032',
+            'payzen_vads_trans_id': tx_values.get('transaction_number', '000000'),
             'payzen_vads_ctx_mode': mode,
             'payzen_vads_page_action': 'PAYMENT',
             'payzen_vads_action_mode': 'INTERACTIVE',
             'payzen_vads_payment_config': 'SINGLE',
             'payzen_vads_version': 'V2',
-            'payzen_vads_url_return': urlparse.urljoin(base_url, PayzenController._return_url),
-            'payzen_vads_return_mode': 'GET',
+            'payzen_vads_url_return': urlparse.urljoin(base_url, tx_values.get('return_url', '')),
+            'payzen_vads_return_mode': 'POST',
             'payzen_vads_order_id': tx_values.get('reference').replace('/', ''),
             # customer info
             'payzen_vads_cust_name': partner_values['name'] and partner_values['name'][0:126].encode('utf-8') or '',
@@ -89,6 +90,7 @@ class AcquirerPayzen(osv.Model):
         })
 
         payzen_tx_values['payzen_signature'] = self._payzen_generate_digital_sign(acquirer, payzen_tx_values)
+
         return partner_values, payzen_tx_values
 
     def payzen_get_form_action_url(self, cr, uid, id, context=None):
@@ -159,20 +161,14 @@ class TxPayzen(osv.Model):
     # --------------------------------------------------
     def _payzen_form_get_tx_from_data(self, cr, uid, data, context=None):
 
-        signature, result, reference = data.get('signature'), data.get('vads_result'), data.get('vads_trans_id')
-        print 'qqq'
-        print data
-        reference = reference.replace('160', 'SAJ/2016/0')
-        cr.execute("UPDATE account_invoice SET state='paid',residual=0 WHERE number='" + reference + "'")
-        cr.commit()
+        signature, result, reference = data.get('signature'), data.get('vads_result'), data.get('vads_order_id')
+
         if not reference or not signature or not result:
             error_msg = 'Payzen : received bad data %s' % (data)
             _logger.error(error_msg)
             raise ValidationError(error_msg)
-        # cr.execute("UPDATE account_invoice SET state='paid' WHERE number='"+ reference +"'")
-        # cr.commit()
+
         tx_ids = self.search(cr, uid, [('reference', '=', reference)], context=context)
-        print tx_ids
         if not tx_ids or len(tx_ids) > 1:
             error_msg = 'Payzen: received data for reference %s' % (reference)
             if not tx_ids:

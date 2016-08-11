@@ -7,7 +7,6 @@
     'version': '0.9',
     'description': """
         Payzen Payment Acquirer
-        
         """,
     'author': 'Sudokeys',
     'depends': ['payment'],

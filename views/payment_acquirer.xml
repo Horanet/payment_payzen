@@ -23,14 +23,6 @@
                 <field name="state" position="after">
                     <field name="authresult_message"/>
                 </field>
-                <!--            <field name="state_message" position="replace"/>
-                                <xpath expr='//notebook' position="before">
-                                <group colspan="4" col="2" name="message_display" >
-                                    <field name="state_message"/>
-                                </group>
-
-                                </xpath>-->
-
             </field>
         </record>
 
