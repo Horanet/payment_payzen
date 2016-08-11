@@ -72,7 +72,7 @@ class AcquirerPayzen(osv.Model):
             'payzen_vads_version': 'V2',
             'payzen_vads_url_return': urlparse.urljoin(base_url, tx_values.get('return_url', '')),
             'payzen_vads_return_mode': 'POST',
-            'payzen_vads_order_id': tx_values.get('reference').replace('/', ''),
+            'payzen_vads_order_id': tx_values.get('reference'),
             # customer info
             'payzen_vads_cust_name': partner_values['name'] and partner_values['name'][0:126].encode('utf-8') or '',
             'payzen_vads_cust_first_name': partner_values['first_name'] and partner_values['first_name'][0:62].encode(
