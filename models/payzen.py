@@ -1,11 +1,13 @@
-# -*- coding: utf-'8' "-*-"
+# -*- coding: utf-'8' '-*-'
 from hashlib import sha1
 import logging
 import urlparse
 
+from openerp import SUPERUSER_ID
 from openerp.addons.payment.models.payment_acquirer import ValidationError
 from openerp.addons.payment_payzen.controllers.main import PayzenController
-from openerp.osv import osv, fields
+from openerp import models, fields, api
+from openerp.tools import float_round
 from openerp.tools.float_utils import float_compare
 from datetime import datetime
 
@@ -18,16 +20,17 @@ currency_code = {
 }
 
 
-class AcquirerPayzen(osv.Model):
+class AcquirerPayzen(models.Model):
     _inherit = 'payment.acquirer'
 
-    def _get_providers(self, cr, uid, context=None):
-        providers = super(AcquirerPayzen, self)._get_providers(cr, uid, context=context)
+    @api.model
+    def _get_providers(self):
+        providers = super(AcquirerPayzen, self)._get_providers()
         providers.append(['payzen', 'Payzen'])
         return providers
 
-    def _get_payzen_urls(self, cr, uid, environment, context=None):
-        if environment == 'prod':
+    def _get_payzen_urls(self):
+        if self.environment == 'prod':
             return {
                 'payzen_form_url': 'https://secure.payzen.eu/vads-payment/',
             }
@@ -36,10 +39,8 @@ class AcquirerPayzen(osv.Model):
                 'payzen_form_url': 'https://secure.payzen.eu/vads-payment/',
             }
 
-    _columns = {
-        'payzen_websitekey': fields.char('Website ID', required_if_provider='payzen'),
-        'payzen_secretkey': fields.char('SecretKey', required_if_provider='payzen'),
-    }
+    payzen_websitekey = fields.Char(string='Website ID', required_if_provider='payzen')
+    payzen_secretkey = fields.Char(string='SecretKey', required_if_provider='payzen')
 
     def _payzen_generate_digital_sign(self, acquirer, vads_values):
         signature = ''
@@ -48,11 +49,13 @@ class AcquirerPayzen(osv.Model):
                 signature += str(vads_values[key]).decode('utf-8') + '+'
         signature += acquirer.payzen_secretkey
         shasign = sha1(signature.encode('utf-8')).hexdigest()
+
         return shasign
 
-    def payzen_form_generate_values(self, cr, uid, id, partner_values, tx_values, context=None):
-        base_url = self.pool['ir.config_parameter'].get_param(cr, uid, 'web.base.url')
-        acquirer = self.browse(cr, uid, id, context=context)
+    @api.model
+    def payzen_form_generate_values(self, id, partner_values, tx_values, context=None):
+        base_url = self.env['ir.config_parameter'].get_param('web.base.url')
+        acquirer = self.browse(id)
 
         if acquirer.environment == 'test':
             mode = 'TEST'
@@ -63,7 +66,7 @@ class AcquirerPayzen(osv.Model):
             'payzen_vads_site_id': acquirer.payzen_websitekey,
             'payzen_vads_amount': int(tx_values['amount'] * 100),
             'payzen_vads_currency': currency_code.get(tx_values['currency'].name, 0),
-            'payzen_vads_trans_date': datetime.utcnow().strftime("%Y%m%d%H%M%S"),
+            'payzen_vads_trans_date': datetime.utcnow().strftime('%Y%m%d%H%M%S'),
             'payzen_vads_trans_id': tx_values.get('transaction_number', '000000'),
             'payzen_vads_ctx_mode': mode,
             'payzen_vads_page_action': 'PAYMENT',
@@ -93,74 +96,74 @@ class AcquirerPayzen(osv.Model):
 
         return partner_values, payzen_tx_values
 
-    def payzen_get_form_action_url(self, cr, uid, id, context=None):
-        acquirer = self.browse(cr, uid, id, context=context)
-        return self._get_payzen_urls(cr, uid, acquirer.environment, context=context)['payzen_form_url']
-
+    @api.model
+    def payzen_get_form_action_url(self, id):
+        acquirer = self.browse(id)
+        return acquirer._get_payzen_urls()['payzen_form_url']
 
 _AUTH_RESULT = {
-    "00": u"transaction approuvée ou traitée avec succès",
-    "02": u"contacter l’émetteur de carte",
-    "03": u"accepteur invalide",
-    "04": u"conserver la carte",
-    "05": u"ne pas honorer",
-    "07": u"conserver la carte, conditions spéciales",
-    "08": u"approuver après identification",
-    "12": u"transaction invalide",
-    "13": u"montant invalide",
-    "14": u"numéro de porteur invalide",
-    "15": u"Emetteur de carte inconnu",
-    "17": u"Annulation client",
-    "19": u"Répéter la transaction ultérieurement",
-    "20": u"Réponse erronée (erreur dans le domaine serveur)",
-    "24": u"Mise à jour de fichier non supportée",
-    "25": u"Impossible de localiser l’enregistrement dans le fichier",
-    "26": u"Enregistrement dupliqué, ancien enregistrement remplacé",
-    "27": u"Erreur en « edit » sur champ de lise à jour fichier",
-    "28": u"Accès interdit au fichier",
-    "29": u"Mise à jour impossible",
-    "30": u"erreur de format",
-    "31": u"identifiant de l’organisme acquéreur inconnu",
-    "33": u"date de validité de la carte dépassée",
-    "34": u"suspicion de fraude",
-    "38": u"Date de validité de la carte dépassée",
-    "41": u"carte perdue",
-    "43": u"carte volée",
-    "51": u"provision insuffisante ou crédit dépassé",
-    "54": u"date de validité de la carte dépassée",
-    "55": u"Code confidentiel erroné",
-    "56": u"carte absente du fichier",
-    "57": u"transaction non permise à ce porteur",
-    "58": u"transaction interdite au terminal",
-    "59": u"suspicion de fraude",
-    "60": u"l’accepteur de carte doit contacter l’acquéreur",
-    "61": u"montant de retrait hors limite",
-    "63": u"règles de sécurité non respectées",
-    "68": u"réponse non parvenue ou reçue trop tard",
-    "75": u"Nombre d’essais code confidentiel dépassé",
-    "76": u"Porteur déjà en opposition, ancien enregistrement conservé",
-    "90": u"arrêt momentané du système",
-    "91": u"émetteur de cartes inaccessible",
-    "94": u"transaction dupliquée",
-    "96": u"mauvais fonctionnement du système",
-    "97": u"échéance de la temporisation de surveillance globale",
-    "98": u"serveur indisponible routage réseau demandé à nouveau",
-    "99": u"incident domaine initiateur",
+    '00': u'transaction approuvée ou traitée avec succès',
+    '02': u'contacter l’émetteur de carte',
+    '03': u'accepteur invalide',
+    '04': u'conserver la carte',
+    '05': u'ne pas honorer',
+    '07': u'conserver la carte, conditions spéciales',
+    '08': u'approuver après identification',
+    '12': u'transaction invalide',
+    '13': u'montant invalide',
+    '14': u'numéro de porteur invalide',
+    '15': u'Emetteur de carte inconnu',
+    '17': u'Annulation client',
+    '19': u'Répéter la transaction ultérieurement',
+    '20': u'Réponse erronée (erreur dans le domaine serveur)',
+    '24': u'Mise à jour de fichier non supportée',
+    '25': u'Impossible de localiser l’enregistrement dans le fichier',
+    '26': u'Enregistrement dupliqué, ancien enregistrement remplacé',
+    '27': u'Erreur en « edit » sur champ de lise à jour fichier',
+    '28': u'Accès interdit au fichier',
+    '29': u'Mise à jour impossible',
+    '30': u'erreur de format',
+    '31': u'identifiant de l’organisme acquéreur inconnu',
+    '33': u'date de validité de la carte dépassée',
+    '34': u'suspicion de fraude',
+    '38': u'Date de validité de la carte dépassée',
+    '41': u'carte perdue',
+    '43': u'carte volée',
+    '51': u'provision insuffisante ou crédit dépassé',
+    '54': u'date de validité de la carte dépassée',
+    '55': u'Code confidentiel erroné',
+    '56': u'carte absente du fichier',
+    '57': u'transaction non permise à ce porteur',
+    '58': u'transaction interdite au terminal',
+    '59': u'suspicion de fraude',
+    '60': u'l’accepteur de carte doit contacter l’acquéreur',
+    '61': u'montant de retrait hors limite',
+    '63': u'règles de sécurité non respectées',
+    '68': u'réponse non parvenue ou reçue trop tard',
+    '75': u'Nombre d’essais code confidentiel dépassé',
+    '76': u'Porteur déjà en opposition, ancien enregistrement conservé',
+    '90': u'arrêt momentané du système',
+    '91': u'émetteur de cartes inaccessible',
+    '94': u'transaction dupliquée',
+    '96': u'mauvais fonctionnement du système',
+    '97': u'échéance de la temporisation de surveillance globale',
+    '98': u'serveur indisponible routage réseau demandé à nouveau',
+    '99': u'incident domaine initiateur',
 }
 
 
-class TxPayzen(osv.Model):
+class TxPayzen(models.Model):
     _inherit = 'payment.transaction'
-    _columns = {
-        'state_message': fields.text('Transaction log'),
-        'authresult_message': fields.char('Transaction error'),
-    }
+
+    state_message = fields.Text(string='Transaction log')
+    authresult_message = fields.Char(string='Transaction error')
+
 
     # --------------------------------------------------
     # FORM RELATED METHODS
     # --------------------------------------------------
-    def _payzen_form_get_tx_from_data(self, cr, uid, data, context=None):
-
+    @api.model
+    def _payzen_form_get_tx_from_data(self, data, context=None):
         signature, result, reference = data.get('signature'), data.get('vads_result'), data.get('vads_order_id')
 
         if not reference or not signature or not result:
@@ -168,7 +171,7 @@ class TxPayzen(osv.Model):
             _logger.error(error_msg)
             raise ValidationError(error_msg)
 
-        tx_ids = self.search(cr, uid, [('reference', '=', reference)], context=context)
+        tx_ids = self.search([('reference', '=', reference)])
         if not tx_ids or len(tx_ids) > 1:
             error_msg = 'Payzen: received data for reference %s' % (reference)
             if not tx_ids:
@@ -177,31 +180,48 @@ class TxPayzen(osv.Model):
                 error_msg += '; multiple order found'
             _logger.error(error_msg)
             raise ValidationError(error_msg)
-        tx = self.pool['payment.transaction'].browse(cr, uid, tx_ids[0], context=context)
+        tx = self.env['payment.transaction'].browse(tx_ids[0].id)
 
-        shasign_check = self.pool['payment.acquirer']._payzen_generate_digital_sign(tx.acquirer_id, data)
-        """if shasign_check != signature.upper :
+        shasign_check = self.env['payment.acquirer']._payzen_generate_digital_sign(tx.acquirer_id, data)
+        '''if shasign_check != signature.upper :
             error_msg = 'Payzen : invalid shasign, received %s, computed %s, for data %s' % (signature, shasign_check, data)
             _logger.error(error_msg)
-            raise ValidationError(error_msg)"""
+            raise ValidationError(error_msg)'''
 
         return tx
 
-    def _payzen_form_get_invalid_parameters(self, cr, uid, tx, data, context=None):
+    @api.model
+    def _payzen_form_get_invalid_parameters(self, tx, data):
         invalid_parameters = []
 
         return invalid_parameters
 
-    def _payzen_form_validate(self, cr, uid, tx, data, context=None):
-        payzen_status = {'valide': ['00'],
-                         'cancel': ['17', ''],
-                         }
+    @api.model
+    def _payzen_form_validate(self, tx, data):
+        payzen_status = {
+            'valide': ['00'],
+            'cancel': ['17', ''],
+        }
         status_code = data.get('vads_auth_result')
+
         if status_code in payzen_status['valide']:
             tx.write({
                 'state': 'done',
                 'state_message': '%s' % (data),
             })
+
+            invoice_obj = self.env['account.invoice']
+            sale_order_obj = self.env['sale.order']
+
+            sale_orders = sale_order_obj.search([('invoice_ids', 'in', tx.invoice_ids.ids)])
+
+            for sale_order in sale_orders:
+                sale_order.payment_acquirer_id = tx.acquirer_id
+                sale_order.payment_tx_id = tx.id
+                sale_order.state = 'done'
+
+            tx.invoice_ids.confirm_paid()
+
             return True
         elif status_code in payzen_status['cancel']:
             tx.write({

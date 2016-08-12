@@ -1,4 +1,9 @@
-## payment_payzen : Interface de paiement pour payzen
+payment_payzen
+==============
+
+Interface de paiement pour payzen
+----------------------------------
+
 
 Permet le paiement des factures et bons de commande via l'intermédiare de paiement payzen
 
