@@ -14,9 +14,8 @@ Lorsqu'une transaction réussie, le statut des factures et bons de commandes ass
 
 
 
--------
 Crédits
-
+-------
 
 Contributors
 ^^^^^^^^^^^^

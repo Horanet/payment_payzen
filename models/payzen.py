@@ -210,9 +210,7 @@ class TxPayzen(models.Model):
                 'state_message': '%s' % (data),
             })
 
-            invoice_obj = self.env['account.invoice']
             sale_order_obj = self.env['sale.order']
-
             sale_orders = sale_order_obj.search([('invoice_ids', 'in', tx.invoice_ids.ids)])
 
             for sale_order in sale_orders:
