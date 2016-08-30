@@ -210,17 +210,35 @@ class TxPayzen(models.Model):
                 'state_message': '%s' % (data),
             })
 
-            sale_order_obj = self.env['sale.order']
-            sale_orders = sale_order_obj.search([('invoice_ids', 'in', tx.invoice_ids.ids)])
+            for invoice in tx.invoice_ids:
+                journal = self.env['account.journal'].sudo().search(
+                    [('name', 'ilike', 'payzen')], limit=1
+                )
+                voucher = self.env['account.voucher'].sudo().create({
+                    'name': '',
+                    'amount': invoice.amount_total,
+                    'journal_id': journal.id,
+                    'account_id': journal.default_debit_account_id.id,
+                    'period_id': self.env['account.voucher'].sudo()._get_period(),
+                    'partner_id': invoice.partner_id.id,
+                    'type': 'receipt',
+                    'reference': tx.reference
+                })
 
-            for sale_order in sale_orders:
-                sale_order.payment_acquirer_id = tx.acquirer_id
-                sale_order.payment_tx_id = tx.id
-                sale_order.state = 'done'
+                voucher_line = self.env['account.voucher.line'].sudo().create({
+                    'name': '',
+                    'amount': invoice.amount_total,
+                    'voucher_id': voucher.id,
+                    'partner_id': invoice.partner_id.id,
+                    'account_id': invoice.partner_id.property_account_receivable.id,
+                    'type': 'cr',
+                    'move_line_id': invoice.move_id.line_id[0].id
+                })
 
-            tx.invoice_ids.confirm_paid()
+                voucher.signal_workflow('proforma_voucher')
 
             return True
+
         elif status_code in payzen_status['cancel']:
             tx.write({
                 'state': 'cancel',

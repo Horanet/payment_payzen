@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     'name': "Payzen Payment Acquirer",
-    'version': '8.0.16.8.16',
+    'version': '8.0.16.8.30',
     'summary': 'Interface de gestion des factures',
     'author': "Horanet",
     'website': "http://www.horanet.com/",
