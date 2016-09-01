@@ -11,8 +11,8 @@
         'Adrien Didenot'
     ],
     'depends': [
-        'payment',
-        'horanet_collectivity'
+        'horanet_collectivity',
+        'horanet_payment',
     ],
     'data': [
         'views/payzen.xml',
