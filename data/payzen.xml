@@ -15,20 +15,10 @@
             <field name="payzen_secretkey">dummy</field>
         </record>
 
-        <record id="account_payzen" model="account.account">
-            <field name="code">512103</field>
-            <field name="name">Payzen</field>
-            <field name="type">other</field>
-            <field name="user_type" ref="account.data_account_type_bank"></field>
-        </record>
-
         <record id="account_journal_payzen" model="account.journal">
             <field name="name">Payzen</field>
-            <field name="code">BNK3</field>
+            <field name="code">PZEN</field>
             <field name="type">bank</field>
-            <field name="default_debit_account_id" ref="account_payzen"></field>
-            <field name="default_credit_account_id" ref="account_payzen"></field>
         </record>
-
     </data>
 </openerp>
