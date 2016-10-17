@@ -75,7 +75,7 @@ class AcquirerPayzen(models.Model):
             'payzen_vads_version': 'V2',
             'payzen_vads_url_return': urlparse.urljoin(base_url, tx_values.get('return_url', '')),
             'payzen_vads_return_mode': 'POST',
-            'payzen_vads_order_id': tx_values.get('reference'),
+            'payzen_vads_order_id': tx_values.get('reference').replace('/', ''),
             # customer info
             'payzen_vads_cust_name': partner_values['name'] and partner_values['name'][0:126].encode('utf-8') or '',
             'payzen_vads_cust_first_name': partner_values['first_name'] and partner_values['first_name'][0:62].encode(
@@ -164,7 +164,11 @@ class TxPayzen(models.Model):
     # --------------------------------------------------
     @api.model
     def _payzen_form_get_tx_from_data(self, data, context=None):
-        signature, result, reference = data.get('signature'), data.get('vads_result'), data.get('vads_order_id')
+        signature, result, reference = data.get('signature'), data.get('vads_result'), data.get('vads_order_id').encode('utf-8')
+
+        # We need to recreate the reference to the invoice if it's a invoice transaction
+        if reference[:3] == 'SAJ':
+            reference = reference[:3] + '/' + reference[3:7] + '/' + reference[7:]
 
         if not reference or not signature or not result:
             error_msg = 'Payzen : received bad data %s' % (data)
@@ -172,6 +176,7 @@ class TxPayzen(models.Model):
             raise ValidationError(error_msg)
 
         tx_ids = self.search([('reference', '=', reference)])
+
         if not tx_ids or len(tx_ids) > 1:
             error_msg = 'Payzen: received data for reference %s' % (reference)
             if not tx_ids:
