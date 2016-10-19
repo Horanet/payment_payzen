@@ -169,6 +169,9 @@ class TxPayzen(models.Model):
         # We need to recreate the reference to the invoice if it's a invoice transaction
         if reference[:3] == 'SAJ':
             reference = reference[:3] + '/' + reference[3:7] + '/' + reference[7:]
+        # Or if it's a weird wharehouse invoice ?
+        elif reference[:2] == 'WH':
+            reference = reference[:2] + '/' + reference[2:5] + '/' + reference[5:]
 
         if not reference or not signature or not result:
             error_msg = 'Payzen : received bad data %s' % (data)
