@@ -5,6 +5,7 @@ Description
 -----------
 
 Ce module permet le paiement des factures et bons de commande via l'intermédiaire de paiement Payzen.
+Ce module surcharge le modèle payment.transaction pour y ajouter la relation avec le modèle account.voucher.
 
 Détail
 ^^^^^^^

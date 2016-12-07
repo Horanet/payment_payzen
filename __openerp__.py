@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     'name': "Payzen Payment Acquirer",
-    'version': '8.0.16.8.30',
+    'version': '8.0.16.12.7',
     'summary': 'Interface de gestion des factures',
     'author': "Horanet",
     'website': "http://www.horanet.com/",
@@ -11,10 +11,12 @@
         'Adrien Didenot'
     ],
     'depends': [
-        'horanet_collectivity',
-        'horanet_payment',
+        'account',
+        'payment',
+        'account_voucher',
     ],
     'data': [
+        'views/inherited_res_config_view.xml',
         'views/payzen.xml',
         'views/payment_acquirer.xml',
         'data/payzen.xml',
