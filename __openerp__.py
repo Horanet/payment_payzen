@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 {
     'name': "Payzen Payment Acquirer",
     'version': '8.0.16.12.7',
@@ -11,9 +10,14 @@
         'Adrien Didenot'
     ],
     'depends': [
+        # --- Odoo --- #
         'account',
         'payment',
         'account_voucher',
+
+        # --- External --- #
+
+        # --- Horanet --- #
     ],
     'data': [
         'views/inherited_res_config_view.xml',
@@ -23,3 +27,4 @@
     ],
     'installable': True,
 }
+# -*- coding: utf-8 -*-
