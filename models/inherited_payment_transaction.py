@@ -1,11 +1,9 @@
 # -*- coding: utf-8 -*-
 
-from openerp import models, fields, api
+from openerp import api, fields, models
 
 
 class PaymentTransactionModel(models.Model):
-    """ This class represent a model : Explanation """
-
     # region Private attributes
     _inherit = 'payment.transaction'
     # endregion
@@ -28,20 +26,28 @@ class PaymentTransactionModel(models.Model):
     # region Constrains and Onchange
     @api.constrains('state')
     def onchange_state(self):
+        """
+        Call corresponding workflow of account.voucher when the state
+        of the transaction change
+        """
         for record in self:
             if record.state == 'done':
-                record._send_voucher_signal('proforma_voucher')
-            elif record.state == 'error' or record.state == 'cancel':
-                record._send_voucher_signal('proforma_cancel')
+                record.send_voucher_signal('proforma_voucher')
+            elif record.state in ['error', 'cancel']:
+                record.send_voucher_signal('proforma_cancel')
     # endregion
 
     # region CRUD (overrides)
     @api.model
     def create(self, values):
+        """
+        Override create method to be able to set a unique (per day, for payzen)
+        number and update its vouchers to keep consistency on the reference
+        """
         rec = super(PaymentTransactionModel, self).create(values)
         rec.transaction_number = '000000{}'.format(rec.id % 899999)[-6:]
 
-        rec._update_vouchers_references()
+        rec.update_vouchers_references()
 
         return rec
     # endregion
@@ -50,12 +56,21 @@ class PaymentTransactionModel(models.Model):
     # endregion
 
     # region Model methods
-    def _update_vouchers_references(self):
+    @api.multi
+    def update_vouchers_references(self):
+        """Update voucher reference corresponding to the transaction reference"""
+        self.ensure_one()
+
         for voucher in self.voucher_ids:
             voucher.reference = self.reference
 
     @api.multi
-    def _send_voucher_signal(self, signal):
+    def send_voucher_signal(self, signal):
+        """Call the account.voucher workflow with the corresponding signal
+
+        :param signal: signal to call the appropriate workflow"""
+        self.ensure_one()
+
         for voucher in self.voucher_ids:
             voucher.signal_workflow(signal)
     # endregion

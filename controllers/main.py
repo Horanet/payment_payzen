@@ -1,17 +1,14 @@
 # -*- coding: utf-8 -*-
+
 try:
     import simplejson as json
 except ImportError:
     import json
 
-import logging
-import pprint
 import werkzeug
 
-from openerp import http, SUPERUSER_ID
+from openerp import http
 from openerp.http import request
-
-_logger = logging.getLogger(__name__)
 
 
 class PayzenController(http.Controller):
@@ -19,11 +16,14 @@ class PayzenController(http.Controller):
 
     @http.route(['/payment/payzen/return', ], type='http', auth='none')
     def payzen_return(self, **post):
-        request.registry['payment.transaction'].form_feedback(request.cr, SUPERUSER_ID, post, 'payzen',
-                                                              context=request.context)
+        """Route called after a transaction with payzen"""
+        request.env['payment.transaction'].form_feedback(post, 'payzen')
+
         return_url = post.pop('return_url', '')
+
         if not return_url:
             data = '' + post.pop('ADD_RETURNDATA', '{}').replace("'", "\"")
             custom = json.loads(data)
             return_url = custom.pop('return_url', '/')
+
         return werkzeug.utils.redirect(return_url)

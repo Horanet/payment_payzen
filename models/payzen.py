@@ -1,22 +1,19 @@
-# -*- coding: utf-'8' '-*-'
-from hashlib import sha1
+# -*- coding: utf-8 -*-
+
 import logging
 import urlparse
-
-from openerp import SUPERUSER_ID
-from openerp.addons.payment.models.payment_acquirer import ValidationError
-from openerp.addons.payment_payzen.controllers.main import PayzenController
-from openerp import models, fields, api
-from openerp.tools import float_round
-from openerp.tools.float_utils import float_compare
 from datetime import datetime
+from hashlib import sha1
+
+from openerp import api, fields, models
+from openerp.addons.payment.models.payment_acquirer import ValidationError
 
 _logger = logging.getLogger(__name__)
 
-currency_code = {
+CURRENCY_CODE = {
     'EUR': 978,
     'USD': 840,
-    'CAD': 124
+    'CAD': 124,
 }
 
 
@@ -25,37 +22,53 @@ class AcquirerPayzen(models.Model):
 
     @api.model
     def _get_providers(self):
+        """Add payzen to providers and return it"""
         providers = super(AcquirerPayzen, self)._get_providers()
         providers.append(['payzen', 'Payzen'])
         return providers
 
-    def _get_payzen_urls(self):
+    @api.model
+    def get_payzen_urls(self):
+        """Return payzen URL corresponding to current environment"""
         if self.environment == 'prod':
-            return {
-                'payzen_form_url': 'https://secure.payzen.eu/vads-payment/',
-            }
+            return 'https://secure.payzen.eu/vads-payment/'
         else:
-            return {
-                'payzen_form_url': 'https://secure.payzen.eu/vads-payment/',
-            }
+            return 'https://secure.payzen.eu/vads-payment/'
 
     payzen_websitekey = fields.Char(string='Website ID', required_if_provider='payzen')
     payzen_secretkey = fields.Char(string='SecretKey', required_if_provider='payzen')
 
+    @api.model
     def _payzen_generate_digital_sign(self, acquirer, vads_values):
+        """Returns signature required by payzen to ensure integrity
+
+        :param acquirer: payment.acquirer record
+        :param vads_values: transaction values
+        :return: unique generated signature
+        """
+
         signature = ''
+
         for key in sorted(vads_values.iterkeys()):
             if key.find('payzen_vads_') == 0:
                 signature += str(vads_values[key]).decode('utf-8') + '+'
+
         signature += acquirer.payzen_secretkey
         shasign = sha1(signature.encode('utf-8')).hexdigest()
 
         return shasign
 
     @api.model
-    def payzen_form_generate_values(self, id, partner_values, tx_values, context=None):
+    def payzen_form_generate_values(self, acquirer_id, partner_values, tx_values):
+        """Generates the values used to render the form button template
+
+        :param acquirer_id: id of payment.acquirer to use
+        :param partner_values: a dictionary of partner-related values
+        :param tx_values: a dictionnary of transaction related values
+        :return: partner_values and payzen_tx_values which is tx_values with more values
+        """
         base_url = self.env['ir.config_parameter'].get_param('web.base.url')
-        acquirer = self.browse(id)
+        acquirer = self.browse(acquirer_id)
 
         if acquirer.environment == 'test':
             mode = 'TEST'
@@ -65,7 +78,7 @@ class AcquirerPayzen(models.Model):
         payzen_tx_values.update({
             'payzen_vads_site_id': acquirer.payzen_websitekey,
             'payzen_vads_amount': int(tx_values['amount'] * 100),
-            'payzen_vads_currency': currency_code.get(tx_values['currency'].name, 0),
+            'payzen_vads_currency': CURRENCY_CODE.get(tx_values['currency'].name, 0),
             'payzen_vads_trans_date': datetime.utcnow().strftime('%Y%m%d%H%M%S'),
             'payzen_vads_trans_id': tx_values.get('transaction_number', '000000'),
             'payzen_vads_ctx_mode': mode,
@@ -78,15 +91,12 @@ class AcquirerPayzen(models.Model):
             'payzen_vads_order_id': tx_values.get('reference').replace('/', ''),
             # customer info
             'payzen_vads_cust_name': partner_values['name'] and partner_values['name'][0:126].encode('utf-8') or '',
-            'payzen_vads_cust_first_name': partner_values['first_name'] and partner_values['first_name'][0:62].encode(
-                'utf-8') or '',
-            'payzen_vads_cust_last_name': partner_values['last_name'] and partner_values['last_name'][0:62].encode(
-                'utf-8') or '',
+            'payzen_vads_cust_first_name': partner_values['first_name'] and partner_values['first_name'][0:62].encode('utf-8') or '',
+            'payzen_vads_cust_last_name': partner_values['last_name'] and partner_values['last_name'][0:62].encode('utf-8') or '',
             'payzen_vads_cust_address': partner_values['address'] and partner_values['address'][0:254].encode('utf-8'),
             'payzen_vads_cust_zip': partner_values['zip'] and partner_values['zip'][0:62].encode('utf-8') or '',
             'payzen_vads_cust_city': partner_values['city'] and partner_values['city'][0:62].encode('utf-8') or '',
-            'payzen_vads_cust_state': partner_values['state'] and partner_values['state'].name[0:62].encode(
-                'utf-8') or '',
+            'payzen_vads_cust_state': partner_values['state'] and partner_values['state'].name[0:62].encode('utf-8') or '',
             'payzen_vads_cust_country': partner_values['country'].code and partner_values['country'].code.upper() or '',
             'payzen_vads_cust_email': partner_values['email'] and partner_values['email'][0:126].encode('utf-8') or '',
             'payzen_vads_cust_phone': partner_values['phone'] and partner_values['phone'][0:31].encode('utf-8') or '',
@@ -97,9 +107,15 @@ class AcquirerPayzen(models.Model):
         return partner_values, payzen_tx_values
 
     @api.model
-    def payzen_get_form_action_url(self, id):
-        acquirer = self.browse(id)
-        return acquirer._get_payzen_urls()['payzen_form_url']
+    def payzen_get_form_action_url(self, acquirer_id):
+        """Returns the form action URL
+
+        :param acquirer_id: id of the payment.acquirer to return urls
+        :return: url corresponding to the environment
+        """
+
+        acquirer = self.browse(acquirer_id)
+        return acquirer.get_payzen_urls()
 
 _AUTH_RESULT = {
     '00': u'transaction approuvée ou traitée avec succès',
@@ -158,13 +174,19 @@ class TxPayzen(models.Model):
     state_message = fields.Text(string='Transaction log')
     authresult_message = fields.Char(string='Transaction error')
 
-
     # --------------------------------------------------
     # FORM RELATED METHODS
     # --------------------------------------------------
     @api.model
-    def _payzen_form_get_tx_from_data(self, data, context=None):
-        signature, result, reference = data.get('signature'), data.get('vads_result'), data.get('vads_order_id').encode('utf-8')
+    def _payzen_form_get_tx_from_data(self, data):
+        """ Method called by form_feedback after the transaction
+
+        :param data: data received from the acquirer after the transaction
+        :return: payment.transaction record if retrieved or an exception
+        """
+        signature = data.get('signature')
+        result = data.get('vads_result')
+        reference = data.get('vads_order_id').encode('utf-8')
 
         # We need to recreate the reference to the invoice if it's a invoice transaction
         if reference[:3] == 'SAJ':
@@ -188,24 +210,32 @@ class TxPayzen(models.Model):
                 error_msg += '; multiple order found'
             _logger.error(error_msg)
             raise ValidationError(error_msg)
-        tx = self.env['payment.transaction'].browse(tx_ids[0].id)
+        transaction = self.env['payment.transaction'].browse(tx_ids[0].id)
 
-        shasign_check = self.env['payment.acquirer']._payzen_generate_digital_sign(tx.acquirer_id, data)
-        '''if shasign_check != signature.upper :
-            error_msg = 'Payzen : invalid shasign, received %s, computed %s, for data %s' % (signature, shasign_check, data)
-            _logger.error(error_msg)
-            raise ValidationError(error_msg)'''
+        # TODO: check this
+        # shasign_check = self.env['payment.acquirer']._payzen_generate_digital_sign(tx.acquirer_id, data)
+        # if shasign_check != signature.upper :
+        #     error_msg = 'Payzen : invalid shasign, received %s, computed %s, for data %s' % (signature, shasign_check, data)
+        #     _logger.error(error_msg)
+        #     raise ValidationError(error_msg)
 
-        return tx
+        return transaction
 
     @api.model
-    def _payzen_form_get_invalid_parameters(self, tx, data):
+    def _payzen_form_get_invalid_parameters(self, transaction, data):
         invalid_parameters = []
+
+        # TODO: COMPLETE THIS AS IT DOES NOTHING FOR NOW..
 
         return invalid_parameters
 
     @api.model
-    def _payzen_form_validate(self, tx, data):
+    def _payzen_form_validate(self, transaction, data):
+        """Check the state of the transaction and set it accordingly
+
+        :param transaction: payment.transaction record to act on
+        :param data: data received from payzen at the end of transaction
+        """
         payzen_status = {
             'valide': ['00'],
             'cancel': ['17', ''],
@@ -213,7 +243,7 @@ class TxPayzen(models.Model):
         status_code = data.get('vads_auth_result')
 
         if status_code in payzen_status['valide']:
-            tx.write({
+            transaction.sudo().write({
                 'state': 'done',
                 'state_message': '%s' % (data),
             })
@@ -221,7 +251,7 @@ class TxPayzen(models.Model):
             return True
 
         elif status_code in payzen_status['cancel']:
-            tx.write({
+            transaction.sudo().write({
                 'state': 'cancel',
                 'state_message': '%s' % (data),
             })
@@ -232,7 +262,7 @@ class TxPayzen(models.Model):
                 authresult_message = _AUTH_RESULT[status_code]
             error = 'Payzen error'
             _logger.info(error)
-            tx.write({
+            transaction.sudo().write({
                 'state': 'error',
                 'state_message': '%s' % (data),
                 'authresult_message': authresult_message,
