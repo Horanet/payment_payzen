@@ -4,6 +4,21 @@ from openerp import api, fields, models
 
 
 class PaymentTransactionModel(models.Model):
+    """ Transaction Model. Each specific acquirer can extend the model by adding
+    its own fields.
+
+    Methods that can be added in an acquirer-specific implementation:
+
+     - ``<name>_create``: method receiving values used when creating a new
+       transaction and that returns a dictionary that will update those values.
+       This method can be used to tweak some transaction values.
+
+    Methods defined for convention, depending on your controllers:
+
+     - ``<name>_form_feedback(self, cr, uid, data, context=None)``: method that
+       handles the data coming from the acquirer after the transaction. It will
+       generally receives data posted by the acquirer after the transaction.
+    """
     # region Private attributes
     _inherit = 'payment.transaction'
     # endregion

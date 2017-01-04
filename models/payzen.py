@@ -18,6 +18,32 @@ CURRENCY_CODE = {
 
 
 class AcquirerPayzen(models.Model):
+    """ Acquirer Model. Each specific acquirer can extend the model by adding
+    its own fields, using the acquirer_name as a prefix for the new fields.
+    Using the required_if_provider='<name>' attribute on fields it is possible
+    to have required fields that depend on a specific acquirer.
+
+    Each acquirer has a link to an ir.ui.view record that is a template of
+    a button used to display the payment form. See examples in ``payment_ogone``
+    and ``payment_paypal`` modules.
+
+    Methods that should be added in an acquirer-specific implementation:
+
+     - ``<name>_form_generate_values(self, cr, uid, id, reference, amount, currency,
+       partner_id=False, partner_values=None, tx_custom_values=None, context=None)``:
+       method that generates the values used to render the form button template.
+     - ``<name>_get_form_action_url(self, cr, uid, id, context=None):``: method
+       that returns the url of the button form. It is used for example in
+       ecommerce application, if you want to post some data to the acquirer.
+     - ``<name>_compute_fees(self, cr, uid, id, amount, currency_id, country_id,
+       context=None)``: computed the fees of the acquirer, using generic fields
+       defined on the acquirer model (see fields definition).
+
+    Each acquirer should also define controllers to handle communication between
+    OpenERP and the acquirer. It generally consists in return urls given to the
+    button form and that the acquirer uses to send the customer back after the
+    transaction, with transaction details given as a POST request.
+    """
     _inherit = 'payment.acquirer'
 
     @api.model
