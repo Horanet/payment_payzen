@@ -1,0 +1,503 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* payment_payzen
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 10.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2017-01-26 10:52+0100\n"
+"PO-Revision-Date: 2017-01-26 11:18+0100\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"X-Generator: Poedit 1.8.11\n"
+"Last-Translator: Alexandre Papin <alexandre.papin@horanet.com>\n"
+"Language: fr_FR\n"
+
+#. module: payment_payzen
+#: model:payment.acquirer,cancel_msg:payment_payzen.payment_acquirer_payzen
+msgid "<span><i>Cancel,</i> Your payment has been cancelled.</span>"
+msgstr "<span><i>Annulé,</i> Votre paiement à été annulé.</span>"
+
+#. module: payment_payzen
+#: model:payment.acquirer,done_msg:payment_payzen.payment_acquirer_payzen
+msgid ""
+"<span><i>Done,</i> Your online payment has been successfully processed. "
+"Thank you for your order.</span>"
+msgstr ""
+"<span><i>Fait,</i> Votre paiement en ligne à correctement été effectué. "
+"Merci de votre commande.</span>"
+
+#. module: payment_payzen
+#: model:payment.acquirer,error_msg:payment_payzen.payment_acquirer_payzen
+msgid ""
+"<span><i>Error,</i> Please be aware that an error occurred during the "
+"transaction. The order has been confirmed but will not be paid. Do not "
+"hesitate to contact us if you have any questions on the status of your order."
+"</span>"
+msgstr ""
+"<span><i>Erreur,</i> Une erreur est survenue lors de la transaction. La "
+"commande à été confirmée mais ne sera pas payée. N’hésitez pas à nous "
+"contacter si vous avez des questions sur l’état de votre commande.</span>"
+
+#. module: payment_payzen
+#: model:payment.acquirer,pending_msg:payment_payzen.payment_acquirer_payzen
+msgid ""
+"<span><i>Pending,</i> Your online payment has been successfully processed. "
+"But your order is not validated yet.</span>"
+msgstr ""
+"<span><i>En attente,</i> Votre paiement en ligne à été effectué avec succès. "
+"Mais votre commande n’est pas encore validée.</span>"
+
+#. module: payment_payzen
+#: code:addons/payment_payzen/models/inherited_payment_transaction.py:79
+#, python-format
+msgid "Accepted - ATC Synchronization"
+msgstr "Acceptée - Synchronisation ATC"
+
+#. module: payment_payzen
+#: model:ir.model.fields,field_description:payment_payzen.field_res_currency_number
+msgid "Alphanumeric code"
+msgstr "Code alphanumerique"
+
+#. module: payment_payzen
+#: code:addons/payment_payzen/models/inherited_payment_transaction.py:60
+#, python-format
+msgid "Approve with ID"
+msgstr "Autoriser avec l’identifiant"
+
+#. module: payment_payzen
+#: code:addons/payment_payzen/models/inherited_payment_transaction.py:59
+#, python-format
+msgid "Approved"
+msgstr "Autorisé"
+
+#. module: payment_payzen
+#: code:addons/payment_payzen/models/inherited_payment_transaction.py:12
+#, python-format
+msgid "Approved or successfully processed transaction"
+msgstr "Transaction approuvée ou traitée avec succès."
+
+#. module: payment_payzen
+#: code:addons/payment_payzen/models/inherited_payment_transaction.py:23
+#, python-format
+msgid "Canceled by the buyer"
+msgstr "Annulation acheteur."
+
+#. module: payment_payzen
+#: code:addons/payment_payzen/models/inherited_payment_transaction.py:42
+#, python-format
+msgid "Card absent from the file"
+msgstr "Carte absente du fichier"
+
+#. module: payment_payzen
+#: code:addons/payment_payzen/models/inherited_payment_transaction.py:46
+#, python-format
+msgid "Card acceptor must contact the acquirer"
+msgstr "L’accepteur de carte doit contacter l’acquéreur."
+
+#. module: payment_payzen
+#: code:addons/payment_payzen/models/inherited_payment_transaction.py:71
+#, python-format
+msgid "Cardmember not enrolled / not permitted"
+msgstr "Titulaire non inscrit / non permis"
+
+#. module: payment_payzen
+#: code:addons/payment_payzen/models/inherited_payment_transaction.py:18
+#, python-format
+msgid "Confirm after identification"
+msgstr "Approuver après identification."
+
+#. module: payment_payzen
+#: code:addons/payment_payzen/models/inherited_payment_transaction.py:13
+#, python-format
+msgid "Contact the card issuer"
+msgstr "Contacter l’émetteur de carte."
+
+#. module: payment_payzen
+#: model:ir.model,name:payment_payzen.model_res_currency
+msgid "Currency"
+msgstr "Devise"
+
+#. module: payment_payzen
+#: code:addons/payment_payzen/models/inherited_payment_transaction.py:62
+#, python-format
+msgid "Declined"
+msgstr "Refusé"
+
+#. module: payment_payzen
+#: code:addons/payment_payzen/models/inherited_payment_transaction.py:30
+#, python-format
+msgid "Denied access to file"
+msgstr "Accès interdit au fichier."
+
+#. module: payment_payzen
+#: code:addons/payment_payzen/models/inherited_payment_transaction.py:77
+#, python-format
+msgid "Deny — Account canceled"
+msgstr "Refusée - Compte annulé"
+
+#. module: payment_payzen
+#: code:addons/payment_payzen/models/inherited_payment_transaction.py:76
+#, python-format
+msgid "Deny — New card issued"
+msgstr "Refusée - Nouvelle carte émise"
+
+#. module: payment_payzen
+#: code:addons/payment_payzen/models/inherited_payment_transaction.py:78
+#, python-format
+msgid "Deny — Pick up card"
+msgstr "Refusée - Reprendre Carte"
+
+#. module: payment_payzen
+#: code:addons/payment_payzen/models/inherited_payment_transaction.py:16
+#, python-format
+msgid "Do not honor"
+msgstr "Ne pas honorer."
+
+#. module: payment_payzen
+#: code:addons/payment_payzen/models/inherited_payment_transaction.py:28
+#, python-format
+msgid "Duplicate registration, the previous record has been replaced"
+msgstr "Enregistrement dupliqué, ancien enregistrement remplacé."
+
+#. module: payment_payzen
+#: code:addons/payment_payzen/models/inherited_payment_transaction.py:64
+#, python-format
+msgid "Exceeded PIN attempts"
+msgstr "Nombre d’essais permis de saisie du NIP dépassé"
+
+#. module: payment_payzen
+#: code:addons/payment_payzen/models/inherited_payment_transaction.py:63
+#, python-format
+msgid "Expired Card / Invalid Expiration Date"
+msgstr "Carte expirée / Date d’expiration invalide"
+
+#. module: payment_payzen
+#: code:addons/payment_payzen/models/inherited_payment_transaction.py:34
+#: code:addons/payment_payzen/models/inherited_payment_transaction.py:36
+#: code:addons/payment_payzen/models/inherited_payment_transaction.py:40
+#, python-format
+msgid "Expired card"
+msgstr "Date de validité de la carte dépassée."
+
+#. module: payment_payzen
+#: code:addons/payment_payzen/models/inherited_payment_transaction.py:29
+#, python-format
+msgid "File update edit error"
+msgstr "Erreur en « edit » sur champ de liste à jour fichier."
+
+#. module: payment_payzen
+#: model:ir.model.fields,field_description:payment_payzen.field_payment_acquirer_payzen_form_action_url
+msgid "Form action URL"
+msgstr "URL de destination du formulaire Payzen"
+
+#. module: payment_payzen
+#: code:addons/payment_payzen/models/inherited_payment_transaction.py:32
+#: code:addons/payment_payzen/models/inherited_payment_transaction.py:74
+#, python-format
+msgid "Format error"
+msgstr "Erreur de format."
+
+#. module: payment_payzen
+#: code:addons/payment_payzen/models/inherited_payment_transaction.py:35
+#, python-format
+msgid "Fraud suspected"
+msgstr "Suspicion de fraude."
+
+#. module: payment_payzen
+#: code:addons/payment_payzen/models/inherited_payment_transaction.py:25
+#, python-format
+msgid "Incorrect response (error on the domain server)"
+msgstr "Réponse erronée (erreur dans le domaine serveur)."
+
+#. module: payment_payzen
+#: code:addons/payment_payzen/models/inherited_payment_transaction.py:58
+#, python-format
+msgid "Initiator domain incident"
+msgstr "Incident domaine initiateur."
+
+#. module: payment_payzen
+#: code:addons/payment_payzen/models/inherited_payment_transaction.py:39
+#, python-format
+msgid "Insufficient balance or exceeded credit limit"
+msgstr "Provision insuffisante ou crédit dépassé."
+
+#. module: payment_payzen
+#: code:addons/payment_payzen/models/inherited_payment_transaction.py:70
+#, python-format
+msgid "Invalid PIN"
+msgstr "NIP invalide"
+
+#. module: payment_payzen
+#: code:addons/payment_payzen/models/inherited_payment_transaction.py:14
+#, python-format
+msgid "Invalid acceptor"
+msgstr "Accepteur invalide."
+
+#. module: payment_payzen
+#: code:addons/payment_payzen/models/inherited_payment_transaction.py:68
+#, python-format
+msgid "Invalid account / Invalid MICR (Travelers Cheque)"
+msgstr "Compte invalide / MICR invalide"
+
+#. module: payment_payzen
+#: code:addons/payment_payzen/models/inherited_payment_transaction.py:20
+#: code:addons/payment_payzen/models/inherited_payment_transaction.py:67
+#, python-format
+msgid "Invalid amount"
+msgstr "Montant invalide"
+
+#. module: payment_payzen
+#: code:addons/payment_payzen/models/inherited_payment_transaction.py:72
+#, python-format
+msgid "Invalid card security code (a.k.a., CID, 4DBC, 4CSC)"
+msgstr "Code de sécurité de la carte invalide (alias NIC/C4C)"
+
+#. module: payment_payzen
+#: code:addons/payment_payzen/models/inherited_payment_transaction.py:21
+#: code:addons/payment_payzen/models/inherited_payment_transaction.py:41
+#, python-format
+msgid "Invalid cardholder number"
+msgstr "Numéro de porteur invalide."
+
+#. module: payment_payzen
+#: code:addons/payment_payzen/models/inherited_payment_transaction.py:75
+#, python-format
+msgid "Invalid currency code"
+msgstr "Code de devise invalide"
+
+#. module: payment_payzen
+#: code:addons/payment_payzen/models/inherited_payment_transaction.py:73
+#, python-format
+msgid "Invalid effective date"
+msgstr "Date d’entrée en vigueur invalide"
+
+#. module: payment_payzen
+#: code:addons/payment_payzen/models/inherited_payment_transaction.py:66
+#, python-format
+msgid "Invalid merchant"
+msgstr "Marchand invalide"
+
+#. module: payment_payzen
+#: code:addons/payment_payzen/models/inherited_payment_transaction.py:19
+#, python-format
+msgid "Invalid transaction"
+msgstr "Transaction invalide."
+
+#. module: payment_payzen
+#: code:addons/payment_payzen/models/inherited_payment_transaction.py:81
+#, python-format
+msgid "Issuer not available"
+msgstr "Émetteur non disponible"
+
+#. module: payment_payzen
+#: code:addons/payment_payzen/models/inherited_payment_transaction.py:15
+#, python-format
+msgid "Keep the card"
+msgstr "Conserver la carte."
+
+#. module: payment_payzen
+#: code:addons/payment_payzen/models/inherited_payment_transaction.py:17
+#, python-format
+msgid "Keep the card, special conditions"
+msgstr "Conserver la carte, conditions spéciales."
+
+#. module: payment_payzen
+#: code:addons/payment_payzen/models/inherited_payment_transaction.py:37
+#, python-format
+msgid "Lost card"
+msgstr "Carte perdue."
+
+#. module: payment_payzen
+#: code:addons/payment_payzen/models/inherited_payment_transaction.py:50
+#, python-format
+msgid "Number of attempts for entering the secret code has been exceeded"
+msgstr "Nombre d’essais code confidentiel dépassé."
+
+#. module: payment_payzen
+#: code:addons/payment_payzen/models/inherited_payment_transaction.py:56
+#, python-format
+msgid "Overall monitoring timeout"
+msgstr "Échéance de la temporisation de surveillance globale."
+
+#. module: payment_payzen
+#: code:addons/payment_payzen/models/inherited_payment_transaction.py:61
+#, python-format
+msgid "Partial Approval (Prepaid Cards only)"
+msgstr "Autorisation partielle (Cartes prépayées seulement)"
+
+#. module: payment_payzen
+#: model:ir.model,name:payment_payzen.model_payment_acquirer
+msgid "Payment Acquirer"
+msgstr "Intermédiaire de paiement"
+
+#. module: payment_payzen
+#: model:ir.model,name:payment_payzen.model_payment_transaction
+msgid "Payment Transaction"
+msgstr "Transaction de paiement"
+
+#. module: payment_payzen
+#: model:payment.acquirer,name:payment_payzen.payment_acquirer_payzen
+msgid "Payzen"
+msgstr ""
+
+#. module: payment_payzen
+#: code:addons/payment_payzen/models/inherited_payment_transaction.py:116
+#, python-format
+msgid "Payzen: signatures mismatch"
+msgstr "Payzen: signatures différentes"
+
+#. module: payment_payzen
+#: code:addons/payment_payzen/models/inherited_payment_transaction.py:65
+#, python-format
+msgid "Please Call Issuer"
+msgstr "Veuillez appeler l’émetteur"
+
+#. module: payment_payzen
+#: model:ir.model.fields,field_description:payment_payzen.field_payment_acquirer_payzen_prod_cert
+msgid "Prod certificate"
+msgstr "Certificat de production"
+
+#. module: payment_payzen
+#: code:addons/payment_payzen/models/inherited_payment_transaction.py:69
+#, python-format
+msgid "Requested function not supported"
+msgstr "Fonction demandée non prise en charge"
+
+#. module: payment_payzen
+#: code:addons/payment_payzen/models/inherited_payment_transaction.py:49
+#, python-format
+msgid "Response not received or received too late"
+msgstr "Réponse non parvenue ou reçue trop tard."
+
+#. module: payment_payzen
+#: code:addons/payment_payzen/models/inherited_payment_transaction.py:24
+#, python-format
+msgid "Retry later"
+msgstr "Répéter la transaction ultérieurement."
+
+#. module: payment_payzen
+#: code:addons/payment_payzen/models/inherited_payment_transaction.py:48
+#, python-format
+msgid "Security rules unfulfilled"
+msgstr "Règles de sécurité non respectées."
+
+#. module: payment_payzen
+#: code:addons/payment_payzen/models/inherited_payment_transaction.py:57
+#, python-format
+msgid "Server not available, new network route requested"
+msgstr "Serveur indisponible routage réseau demandé à nouveau."
+
+#. module: payment_payzen
+#: model:ir.model.fields,field_description:payment_payzen.field_payment_acquirer_payzen_shop_id
+msgid "Shop ID"
+msgstr "Identifiant de la boutique"
+
+#. module: payment_payzen
+#: code:addons/payment_payzen/models/inherited_payment_transaction.py:38
+#, python-format
+msgid "Stolen card"
+msgstr "Carte volée."
+
+#. module: payment_payzen
+#: code:addons/payment_payzen/models/inherited_payment_transaction.py:45
+#, python-format
+msgid "Suspected fraud"
+msgstr "Suspicion de fraude."
+
+#. module: payment_payzen
+#: code:addons/payment_payzen/models/inherited_payment_transaction.py:55
+#, python-format
+msgid "System malfunction"
+msgstr " \tMauvais fonctionnement du système."
+
+#. module: payment_payzen
+#: code:addons/payment_payzen/models/inherited_payment_transaction.py:80
+#, python-format
+msgid "System malfunction (cryptographic error)"
+msgstr "Dysfonctionnement du système (erreur cryptographique)"
+
+#. module: payment_payzen
+#: code:addons/payment_payzen/models/inherited_payment_transaction.py:52
+#, python-format
+msgid "Temporary shutdown"
+msgstr " \tArrêt momentané du système."
+
+#. module: payment_payzen
+#: model:ir.model.fields,field_description:payment_payzen.field_payment_acquirer_payzen_test_cert
+msgid "Test certificate"
+msgstr "Certificat de test"
+
+#. module: payment_payzen
+#: code:addons/payment_payzen/models/inherited_payment_transaction.py:51
+#, python-format
+msgid "The cardholder is already blocked, the previous record has been saved"
+msgstr "Porteur déjà en opposition, ancien enregistrement conservé."
+
+#. module: payment_payzen
+#: code:addons/payment_payzen/models/inherited_payment_transaction.py:54
+#, python-format
+msgid "Transaction duplicated"
+msgstr "Transaction dupliquée."
+
+#. module: payment_payzen
+#: code:addons/payment_payzen/models/inherited_payment_transaction.py:43
+#: code:addons/payment_payzen/models/inherited_payment_transaction.py:44
+#, python-format
+msgid "Transaction not allowed to this cardholder"
+msgstr "Transaction non permise à ce porteur."
+
+#. module: payment_payzen
+#: code:addons/payment_payzen/models/inherited_payment_transaction.py:27
+#, python-format
+msgid "Unable to locate the registered elements in the file"
+msgstr "Impossible de localiser l’enregistrement dans le fichier."
+
+#. module: payment_payzen
+#: code:addons/payment_payzen/models/inherited_payment_transaction.py:53
+#, python-format
+msgid "Unable to reach the card issuer"
+msgstr "Émetteur de cartes inaccessible."
+
+#. module: payment_payzen
+#: code:addons/payment_payzen/models/inherited_payment_transaction.py:31
+#, python-format
+msgid "Unable to update"
+msgstr "Mise à jour impossible."
+
+#. module: payment_payzen
+#: code:addons/payment_payzen/models/inherited_payment_transaction.py:33
+#, python-format
+msgid "Unknown acquirer company ID"
+msgstr "Identifiant de l’organisme acquéreur inconnu."
+
+#. module: payment_payzen
+#: code:addons/payment_payzen/models/inherited_payment_transaction.py:22
+#, python-format
+msgid "Unknown issuer"
+msgstr "Emetteur de carte inconnu."
+
+#. module: payment_payzen
+#: code:addons/payment_payzen/models/inherited_payment_transaction.py:26
+#, python-format
+msgid "Unsupported file update"
+msgstr "Mise à jour de fichier non supportée"
+
+#. module: payment_payzen
+#: code:addons/payment_payzen/models/inherited_payment_transaction.py:47
+#, python-format
+msgid "Withdrawal limit exceeded"
+msgstr "Montant de retrait hors limite."
+
+#. module: payment_payzen
+#: model:payment.acquirer,pre_msg:payment_payzen.payment_acquirer_payzen
+msgid ""
+"You will be redirected to the Payzen website after clicking on the payment "
+"button."
+msgstr ""
+"Vous serez redirigé vers le site internet de Payzen après avoir cliquer sur "
+"le bouton de paiement."

@@ -1,29 +1,20 @@
-# -*- coding: utf-8 -*-
-
-try:
-    import simplejson as json
-except ImportError:
-    import json
+# coding: utf8
 
 import werkzeug
 
-from openerp import http
-from openerp.http import request
+from odoo import http
+from odoo.http import request
 
 
 class PayzenController(http.Controller):
-    _return_url = '/payment/payzen/return'
+    @http.route(['/payment/payzen/return'], type='http', auth='public', csrf=False)
+    def payzen_return(self, **kw):
+        """Route called after a transaction with payzen
 
-    @http.route(['/payment/payzen/return', ], type='http', auth='none')
-    def payzen_return(self, **post):
-        """Route called after a transaction with payzen"""
-        request.env['payment.transaction'].form_feedback(post, 'payzen')
+        :param kw: dict that contains POST values received from Payzen
+        :return: response object
+        """
 
-        return_url = post.pop('return_url', '')
+        request.env['payment.transaction'].form_feedback(kw, 'payzen')
 
-        if not return_url:
-            data = '' + post.pop('ADD_RETURNDATA', '{}').replace("'", "\"")
-            custom = json.loads(data)
-            return_url = custom.pop('return_url', '/')
-
-        return werkzeug.utils.redirect(return_url)
+        return werkzeug.utils.redirect('/', code=303)

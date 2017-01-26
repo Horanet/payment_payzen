@@ -1,4 +1,5 @@
-# -*- coding: utf-8 -*-
+# coding: utf8
 
-from . import models
 from . import controllers
+from . import models
+from .post_install import set_currencies_codes

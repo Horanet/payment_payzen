@@ -1,24 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
-<openerp>
+<odoo>
     <data noupdate="1">
-
         <record id="payment_acquirer_payzen" model="payment.acquirer">
             <field name="name">Payzen</field>
+            <field name="image" type="base64" file="payment_payzen/static/src/img/payzen_icon.png"/>
             <field name="provider">payzen</field>
             <field name="company_id" ref="base.main_company"/>
             <field name="view_template_id" ref="payzen_acquirer_button"/>
             <field name="environment">test</field>
             <field name="pre_msg">
-              <![CDATA[<p>You will be redirected to the Payzen website after cliking on the payment button.</p>]]>
+                <![CDATA[
+<p>You will be redirected to the Payzen website after clicking on the payment button.</p>]]>
             </field>
-            <field name="payzen_websitekey">dummy</field>
-            <field name="payzen_secretkey">dummy</field>
-        </record>
-
-        <record id="account_journal_payzen" model="account.journal">
-            <field name="name">Payzen</field>
-            <field name="code">PZEN</field>
-            <field name="type">bank</field>
+            <field name="payzen_shop_id">dummy</field>
+            <field name="payzen_test_cert">dummy</field>
+            <field name="payzen_prod_cert">dummy</field>
+            <field name="payzen_form_action_url">https://secure.payzen.eu/vads-payment/</field>
+            <field name="description" type="html">
+                <p>
+                    Payzen is a brand developed by Lyra Network, leader in France in routing bank-transactions.
+                    It is the most innovative and affordable online payment solution of the market: means of payment, secured transactions…
+                </p>
+                <ul class="list-inline">
+                    <li>
+                        <i class="fa fa-check"/>eCommerce
+                    </li>
+                </ul>
+            </field>
         </record>
     </data>
-</openerp>
+</odoo>

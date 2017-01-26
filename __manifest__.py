@@ -1,22 +1,20 @@
-# -*- coding: utf-8 -*-
+# coding: utf8
 {
     # Module name in English
-    'name': "Payzen Payment Acquirer",
+    'name': 'Payzen Payment Acquirer',
     # Version, "odoo.min.yy.m.d"
-    'version': '8.0.16.15.12',
+    'version': '10.0.17.1.26',
     # Short description (with keywords)
-    'summary': 'Interface de gestion des factures',
+    'summary': 'Payment Acquirer: Payzen Implementation',
+    # Description with metadata (in french)
+    'description': """Payzen Payment Acquirer""",
     'author': "Horanet",
     'website': "http://www.horanet.com/",
     # distribution license for the module (defaults: AGPL-3)
     'license': "AGPL-3",
-    'contributors': [
-        'Alexandre Papin',
-        'Adrien Didenot'
-    ],
     # Categories can be used to filter modules in modules listing. For the full list :
     # Check https://github.com/odoo/odoo/blob/master/openerp/addons/base/module/module_data.xml
-    'category': 'Website',
+    'category': 'Accounting',
     #
     'external_dependencies': {
         'python': []
@@ -25,10 +23,7 @@
     # they create or because it alters resources they define.
     'depends': [
         # --- Odoo --- #
-        'account',
-        'payment',
-        'account_voucher',
-
+        'payment'
         # --- External --- #
 
         # --- Horanet --- #
@@ -42,9 +37,9 @@
     'update_xml': [],
     # List of data files which must always be installed or updated with the module. A list of paths from the module root directory
     'data': [
-        'views/inherited_res_config_view.xml',
+        'views/payment_views.xml',
         'views/payzen.xml',
-        'views/payment_acquirer.xml',
+
         'data/payzen.xml',
     ],
     # only loaded in demonstration mode
@@ -55,7 +50,9 @@
     # -default value set is False
     # -If false, the dependent modules are not installed if not installed prior to the dependent module.
     # -If True, all corresponding dependent modules are installed at the time of installing this module.
-    'installable': False
+    'installable': True,
     # -True, module can be installed.
     # -False, module is listed in application, but cannot install them.
+
+    'post_init_hook': 'set_currencies_codes'
 }
