@@ -38,9 +38,9 @@
     # List of data files which must always be installed or updated with the module. A list of paths from the module root directory
     'data': [
         'views/payment_views.xml',
-        'views/payzen.xml',
+        'views/payment_payzen_templates.xml',
 
-        'data/payzen.xml',
+        'data/payment_acquirer.xml',
     ],
     # only loaded in demonstration mode
     'demo': [],
