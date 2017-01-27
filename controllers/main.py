@@ -17,4 +17,4 @@ class PayzenController(http.Controller):
 
         request.env['payment.transaction'].form_feedback(kw, 'payzen')
 
-        return werkzeug.utils.redirect('/', code=303)
+        return werkzeug.utils.redirect('/')
