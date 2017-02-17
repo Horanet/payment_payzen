@@ -81,6 +81,7 @@ class PayzenAcquirer(models.Model):
         if self.environment == 'prod':
             mode = 'PRODUCTION'
 
+        values = dict((k, v) for k, v in values.items() if v)
         payzen_tx_values = dict(values)
         payzen_tx_values.update({
             'vads_site_id': self.payzen_shop_id,
