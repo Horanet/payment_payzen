@@ -28,7 +28,7 @@ msgid ""
 "<span><i>Done,</i> Your online payment has been successfully processed. "
 "Thank you for your order.</span>"
 msgstr ""
-"<span><i>Fait,</i> Votre paiement en ligne à correctement été effectué. "
+"<span><i>Fait,</i> Votre paiement en ligne à été effectué correctement. "
 "Merci de votre commande.</span>"
 
 #. module: payment_payzen
@@ -61,7 +61,7 @@ msgstr "Acceptée - Synchronisation ATC"
 #. module: payment_payzen
 #: model:ir.model.fields,field_description:payment_payzen.field_res_currency_number
 msgid "Alphanumeric code"
-msgstr "Code alphanumerique"
+msgstr "Code alphanumérique"
 
 #. module: payment_payzen
 #: code:addons/payment_payzen/models/inherited_payment_transaction.py:60
@@ -188,7 +188,7 @@ msgstr "Date de validité de la carte dépassée."
 #: code:addons/payment_payzen/models/inherited_payment_transaction.py:29
 #, python-format
 msgid "File update edit error"
-msgstr "Erreur en « edit » sur champ de liste à jour fichier."
+msgstr "Erreur en « édition » sur champ de liste à jour fichier."
 
 #. module: payment_payzen
 #: model:ir.model.fields,field_description:payment_payzen.field_payment_acquirer_payzen_form_action_url
@@ -343,7 +343,7 @@ msgstr "Transaction de paiement"
 #. module: payment_payzen
 #: model:payment.acquirer,name:payment_payzen.payment_acquirer_payzen
 msgid "Payzen"
-msgstr ""
+msgstr "Payzen"
 
 #. module: payment_payzen
 #: code:addons/payment_payzen/models/inherited_payment_transaction.py:116
@@ -499,5 +499,5 @@ msgid ""
 "You will be redirected to the Payzen website after clicking on the payment "
 "button."
 msgstr ""
-"Vous serez redirigé vers le site internet de Payzen après avoir cliquer sur "
+"Vous serez redirigé vers le site internet de Payzen après avoir cliqué sur "
 "le bouton de paiement."
