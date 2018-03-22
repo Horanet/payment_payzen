@@ -2,7 +2,7 @@
 
 import logging
 
-from odoo import _, api, models
+from odoo import _, api, fields, models
 from odoo.exceptions import ValidationError
 from odoo.tools.float_utils import float_compare
 
@@ -163,9 +163,11 @@ class PayzenTransaction(models.Model):
         if transaction_status == 'AUTHORISED':
             _logger.info('Validated Payzen payment for transaction %s: set as done' % self.reference)
             values['state'] = 'done'
+            values['date_validate'] = fields.Datetime.now()
         elif transaction_status == 'AUTHORISED_TO_VALIDATE':
             _logger.info('Validated Payzen payment for transaction %s: set as done' % self.reference)
             values['state'] = 'authorized'
+            values['date_validate'] = fields.Datetime.now()
         elif transaction_status == 'ABANDONED':
             _logger.info('Validated Payzen payment for transaction %s: set as cancelled' % self.reference)
             values['state'] = 'cancel'

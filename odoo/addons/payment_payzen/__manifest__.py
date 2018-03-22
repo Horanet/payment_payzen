@@ -3,7 +3,7 @@
     # Module name in English
     'name': 'Payzen Payment Acquirer',
     # Version, "odoo.min.yy.m.d"
-    'version': '10.0.1.0.0',
+    'version': '10.0.1.0.1',
     # Short description (with keywords)
     'summary': 'Payment Acquirer: Payzen Implementation',
     # Description with metadata (in french)
