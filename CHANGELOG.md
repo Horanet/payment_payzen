@@ -15,5 +15,5 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Added
 - Payzen payment acquirer module
 
-[Unreleased]: https://github.com/Horanet/payment_tipiregie/compare/10.0.1.0.1...HEAD
-[10.0.1.0.1]: https://github.com/Horanet/payment_tipiregie/compare/10.0.1.0.0...10.0.1.0.1
+[Unreleased]: https://github.com/Horanet/payment_payzen/compare/10.0.1.0.1...HEAD
+[10.0.1.0.1]: https://github.com/Horanet/payment_payzen/compare/10.0.1.0.0...10.0.1.0.1
