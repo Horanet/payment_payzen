@@ -108,11 +108,7 @@ class PayzenTransaction(models.Model):
             raise ValidationError(error_msg)
 
         signature = data.get('signature')
-        payzen_acquirer = self.env['payment.acquirer'].sudo().search([
-            ('provider', '=', 'payzen')
-        ])
-
-        if signature != payzen_acquirer.payzen_generate_digital_sign(data):
+        if signature != transactions.acquirer_id.payzen_generate_digital_sign(data):
             error_msg = _('Payzen: signatures mismatch')
             _logger.info(error_msg)
             raise ValidationError(error_msg)

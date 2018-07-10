@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [Unreleased]
 ### Added
 
+## [10.0.1.0.2] - 2018-07-10
+### Added
+- [Fix #2] Find current acquirer from current transaction instead of load new acquirer recordset (can occur singleton errors on acquirer duplication)
+
 ## [10.0.1.0.1] - 2018-03-22
 ### Added
 - Fill date_validate field of payment.transaction Odoo model on PayZen response (AUTHORISED or AUTHORISED_TO_VALIDATE)
