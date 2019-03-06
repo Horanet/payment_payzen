@@ -6,6 +6,7 @@ import uuid
 from datetime import datetime
 
 from odoo import api, fields, models
+from odoo.tools import float_round
 
 
 class PayzenAcquirer(models.Model):
@@ -85,7 +86,7 @@ class PayzenAcquirer(models.Model):
         payzen_tx_values = dict(values)
         payzen_tx_values.update({
             'vads_site_id': self.payzen_shop_id,
-            'vads_amount': int(values['amount'] * 100),
+            'vads_amount': int(float_round(values['amount'] * 100, 0)),
             'vads_currency': values.get('currency').number,
             'vads_trans_date': datetime.utcnow().strftime('%Y%m%d%H%M%S'),
             # Payzen requires a unique 6-digits number between 000000 and 899999 per day
