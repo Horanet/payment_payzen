@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [Unreleased]
 ### Added
 
+## [10.0.1.0.3] - 2019-03-08
+### Added
+- Change amount calculation to avoid rounding issues
+
 ## [10.0.1.0.2] - 2018-07-10
 ### Added
 - [Fix #2] Find current acquirer from current transaction instead of load new acquirer recordset (can occur singleton errors on acquirer duplication)
@@ -19,5 +23,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Added
 - Payzen payment acquirer module
 
-[Unreleased]: https://github.com/Horanet/payment_payzen/compare/10.0.1.0.1...HEAD
 [10.0.1.0.1]: https://github.com/Horanet/payment_payzen/compare/10.0.1.0.0...10.0.1.0.1
+[10.0.1.0.2]: https://github.com/Horanet/payment_payzen/compare/10.0.1.0.1...10.0.1.0.2
+[10.0.1.0.3]: https://github.com/Horanet/payment_payzen/compare/10.0.1.0.2...10.0.1.0.3
+[Unreleased]: https://github.com/Horanet/payment_payzen/compare/10.0.1.0.3...HEAD
