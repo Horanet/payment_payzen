@@ -77,6 +77,7 @@ class PayzenAcquirer(models.Model):
         self.ensure_one()
 
         base_url = self.env['ir.config_parameter'].get_param('web.base.url')
+        prec = self.env['decimal.precision'].precision_get('Product Price')
 
         mode = 'TEST'
         if self.environment == 'prod':
@@ -86,7 +87,7 @@ class PayzenAcquirer(models.Model):
         payzen_tx_values = dict(values)
         payzen_tx_values.update({
             'vads_site_id': self.payzen_shop_id,
-            'vads_amount': int(float_round(values['amount'] * 100, 0)),
+            'vads_amount': int(float_round(values['amount'] * 100, prec)),
             'vads_currency': values.get('currency').number,
             'vads_trans_date': datetime.utcnow().strftime('%Y%m%d%H%M%S'),
             # Payzen requires a unique 6-digits number between 000000 and 899999 per day
