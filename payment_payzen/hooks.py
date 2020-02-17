@@ -1,4 +1,5 @@
 from odoo import api, SUPERUSER_ID
+from odoo.addons.payment.models.payment_acquirer import create_missing_journal_for_acquirers
 
 CURRENCIES = {
     'AED': '784',
@@ -191,3 +192,8 @@ def set_currencies_codes(cr, registry):
             currency.number = CURRENCIES.get(currency.name)
 
     return
+
+
+def post_init_hook(cr, registry):
+    set_currencies_codes(cr, registry)
+    create_missing_journal_for_acquirers(cr, registry)

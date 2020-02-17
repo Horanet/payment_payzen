@@ -10,14 +10,14 @@ from odoo.tools import float_round
 class PayzenAcquirer(models.Model):
     _inherit = 'payment.acquirer'
 
-    provider = fields.Selection(selection_add=[('payzen', 'Payzen')])
+    provider = fields.Selection(selection_add=[('payzen', "Payzen")])
 
-    payzen_shop_id = fields.Char(string='Shop ID', required_if_provider='payzen')
-    payzen_test_cert = fields.Char(string='Test certificate', required_if_provider='payzen')
-    payzen_prod_cert = fields.Char(string='Prod certificate', required_if_provider='payzen')
+    payzen_shop_id = fields.Char(string="Shop ID", required_if_provider='payzen')
+    payzen_test_cert = fields.Char(string="Test certificate", required_if_provider='payzen')
+    payzen_prod_cert = fields.Char(string="Prod certificate", required_if_provider='payzen')
     payzen_form_action_url = fields.Char(
-        string='Form action URL',
-        default='https://secure.payzen.eu/vads-payment/',
+        string="Form action URL",
+        default="https://secure.payzen.eu/vads-payment/",
         required_if_provider='payzen'
     )
 
@@ -60,7 +60,7 @@ class PayzenAcquirer(models.Model):
         elif self.environment == 'prod':
             data.append(self.payzen_prod_cert)
 
-        signature = '+'.join(data)
+        signature = str('+').join(data)
 
         return hashlib.sha1(signature.encode('utf8')).hexdigest()
 

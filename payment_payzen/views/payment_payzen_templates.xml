@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-
-    <template id="payzen_acquirer_button">
-        <form t-if="acquirer.payzen_shop_id" t-att-action="tx_url" method="post" target="_self">
+    <template id="payzen_form">
+        <div>
+            <input type="hidden" name="data_set" t-att-data-action-url="tx_url" data-remove-me=""/>
             <input type="hidden" name="vads_site_id" t-att-value="vads_site_id"/>
             <input type="hidden" name="vads_amount" t-att-value="vads_amount"/>
             <input type="hidden" name="vads_currency" t-att-value="vads_currency"/>
@@ -32,16 +32,6 @@
 
             <!-- URLs -->
             <input type="hidden" name="vads_url_return" t-att-value="vads_url_return"/>
-
-            <!-- submit -->
-            <button type="submit" width="100px" t-att-class="submit_class">
-                <img t-if="not submit_txt" src="/payment_payzen/static/src/img/payzen_icon.png"/>
-                <span t-if="submit_txt">
-                    <t t-esc="submit_txt"/>
-                    <span class="fa fa-long-arrow-right"/>
-                </span>
-            </button>
-        </form>
+        </div>
     </template>
-
 </odoo>
