@@ -1,4 +1,3 @@
-# coding: utf8
 {
     # Module name in English
     'name': 'Payzen Payment Acquirer',

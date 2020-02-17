@@ -1,5 +1,3 @@
-# coding: utf8
-
 from odoo import api, SUPERUSER_ID
 
 CURRENCIES = {

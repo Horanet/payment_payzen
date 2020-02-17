@@ -1,5 +1,3 @@
-# coding: utf8
-
 import logging
 
 from odoo import _, api, fields, models
