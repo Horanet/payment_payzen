@@ -1,9 +1,8 @@
-# coding: utf8
 {
     # Module name in English
     'name': 'Payzen Payment Acquirer',
     # Version, "odoo.min.yy.m.d"
-    'version': '10.0.1.0.3',
+    'version': '11.0.1.0.0',
     # Short description (with keywords)
     'summary': 'Payment Acquirer: Payzen Implementation',
     # Description with metadata (in french)
@@ -54,5 +53,5 @@
     # -True, module can be installed.
     # -False, module is listed in application, but cannot install them.
 
-    'post_init_hook': 'set_currencies_codes'
+    'post_init_hook': 'post_init_hook',
 }
