@@ -7,6 +7,10 @@
 
 - [Install Odoo 11.0](https://www.odoo.com/documentation/11.0/setup/install.html) on your favorite environment
 
-## Install addon via pip:
+## Install addon:
 
-`pip install -e git+https://github.com/Horanet/payment_payzen.git@11.0#egg=odoo11-addon-payment-payzen`
+- Execute command :
+
+```bash
+pip install -e git+https://github.com/Horanet/payment_payzen.git@11.0#egg=odoo11-addon-payment-payzen
+```
