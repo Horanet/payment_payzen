@@ -7,23 +7,13 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [Unreleased]
 ### Added
 
-## [10.0.1.0.3] - 2019-03-08
-### Added
-- Change amount calculation to avoid rounding issues
+### Fix
 
-## [10.0.1.0.2] - 2018-07-10
+## [11.0.1.0.0] - 2020-03-06
 ### Added
-- [Fix #2] Find current acquirer from current transaction instead of load new acquirer recordset (can occur singleton errors on acquirer duplication)
+- Migration v11
 
-## [10.0.1.0.1] - 2018-03-22
-### Added
-- Fill date_validate field of payment.transaction Odoo model on PayZen response (AUTHORISED or AUTHORISED_TO_VALIDATE)
+### Fix
 
-## [10.0.1.0.0] - 2017-10-16
-### Added
-- Payzen payment acquirer module
-
-[10.0.1.0.1]: https://github.com/Horanet/payment_payzen/compare/10.0.1.0.0...10.0.1.0.1
-[10.0.1.0.2]: https://github.com/Horanet/payment_payzen/compare/10.0.1.0.1...10.0.1.0.2
-[10.0.1.0.3]: https://github.com/Horanet/payment_payzen/compare/10.0.1.0.2...10.0.1.0.3
-[Unreleased]: https://github.com/Horanet/payment_payzen/compare/10.0.1.0.3...HEAD
+[11.0.1.0.0]: https://github.com/Horanet/payment_payzen/compare/10.0.1.0.3...11.0.1.0.0
+[Unreleased]: https://github.com/Horanet/payment_payzen/compare/11.0.1.0.0...dev-11.0
