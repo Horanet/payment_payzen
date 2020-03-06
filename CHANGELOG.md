@@ -6,6 +6,14 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 ### Added
+
+### Fix
+
+## [11.0.1.0.0] - 2020-03-06
+### Added
 - Migration v11
 
-[Unreleased]: https://github.com/Horanet/payment_payzen/compare/10.0.1.0.3...dev-11.0
+### Fix
+
+[11.0.1.0.0]: https://github.com/Horanet/payment_payzen/compare/10.0.1.0.3...11.0.1.0.0
+[Unreleased]: https://github.com/Horanet/payment_payzen/compare/11.0.1.0.0...dev-11.0
