@@ -1,6 +1,6 @@
 {
     'name': 'Payzen Payment Acquirer',
-    'version': '11.0.1.0.0',
+    'version': '11.0.1.0.1',
     'summary': 'Payment Acquirer: Payzen Implementation',
     'author': "Horanet",
     'website': "http://www.horanet.com/",
