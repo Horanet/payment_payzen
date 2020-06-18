@@ -1,6 +1,6 @@
 # Translation of Odoo Server.
 # This file contains the translation of the following modules:
-#	* payment_payzen
+# 	* payment_payzen
 #
 msgid ""
 msgstr ""
@@ -18,7 +18,7 @@ msgstr ""
 #. module: payment_payzen
 #: model:payment.acquirer,cancel_msg:payment_payzen.payment_acquirer_payzen
 msgid "<span><i>Cancel,</i> Your payment has been cancelled.</span>"
-msgstr "<span><i>Annulé,</i> votre paiement à été annulé.</span>"
+msgstr "<span><i>Annulé,</i> Votre paiement à été annulé.</span>"
 
 #. module: payment_payzen
 #: model:payment.acquirer,done_msg:payment_payzen.payment_acquirer_payzen
@@ -136,6 +136,11 @@ msgstr "Cron pour vérifier les transactions de paiement en attente de Payzen"
 #: model:ir.model,name:payment_payzen.model_res_currency
 msgid "Currency"
 msgstr "Devise"
+
+#. module: payment_payzen
+#: model:ir.model.fields,help:payment_payzen.field_payment_transaction_payzen_returned_data
+msgid "Data returned from PayZen WebService"
+msgstr "Données renvoyées par le WebService PayZen "
 
 #. module: payment_payzen
 #: code:addons/payment_payzen/models/inherited_payment_transaction.py:60
@@ -383,6 +388,11 @@ msgid "Partial Approval (Prepaid Cards only)"
 msgstr "Autorisation partielle (Cartes prépayées seulement)"
 
 #. module: payment_payzen
+#: model:ir.ui.view,arch_db:payment_payzen.payzen_transaction_form
+msgid "PayZen TX Details"
+msgstr "Détails PayZen TX"
+
+#. module: payment_payzen
 #: model:ir.model,name:payment_payzen.model_payment_acquirer
 msgid "Payment Acquirer"
 msgstr "Intermédiaire de paiement"
@@ -438,8 +448,13 @@ msgid "Retry later"
 msgstr "Répéter la transaction ultérieurement."
 
 #. module: payment_payzen
+#: model:ir.model.fields,field_description:payment_payzen.field_payment_transaction_payzen_returned_data
+msgid "Returned data"
+msgstr "Données renvoyées"
+
+#. module: payment_payzen
 #: code:addons/payment_payzen/models/inherited_payment_transaction.py:46
-#: code:addons/payment_payzen/models/inherited_payment_transaction.py:52
+#: code:addons/payment_payzen/models/inherited_payment_transaction.py:47
 #, python-format
 msgid "Security rules unfulfilled"
 msgstr "Règles de sécurité non respectées."
@@ -457,8 +472,18 @@ msgid "Shop ID"
 msgstr "Identifiant de la boutique"
 
 #. module: payment_payzen
+#: model:ir.model.fields,field_description:payment_payzen.field_payment_transaction_payzen_status
+msgid "Status"
+msgstr "État"
+
+#. module: payment_payzen
+#: model:ir.model.fields,help:payment_payzen.field_payment_transaction_payzen_status
+msgid "Status from PayZen WebService"
+msgstr "État renvoyées par le WebService PayZen"
+
+#. module: payment_payzen
 #: code:addons/payment_payzen/models/inherited_payment_transaction.py:36
-#: code:addons/payment_payzen/models/inherited_payment_transaction.py:42
+#: code:addons/payment_payzen/models/inherited_payment_transaction.py:37
 #, python-format
 msgid "Stolen card"
 msgstr "Carte volée."

@@ -18,9 +18,8 @@
         </field>
     </record>
 
-
-    <record id="transaction_form_payfip" model="ir.ui.view">
-        <field name="name">Add action for Payzen acquirer</field>
+    <record id="payzen_transaction_form" model="ir.ui.view">
+        <field name="name">Add data/action from PayZen acquirer</field>
         <field name="model">payment.transaction</field>
         <field name="inherit_id" ref="payment.transaction_form"/>
         <field name="arch" type="xml">
@@ -32,7 +31,16 @@
                     attrs="{'invisible': ['|', ('state','not in',['draft','pending']), ('provider', '!=', 'payzen')]}"
                     />
             </xpath>
+            <xpath expr='//sheet' position='inside'>
+                <notebook>
+                    <page string="PayZen TX Details" attrs="{'invisible': [('provider', '!=', 'payzen')]}">
+                        <group>
+                            <field name="payzen_status"/>
+                            <field name="payzen_returned_data" readonly="1" groups="base.group_no_one"/>
+                        </group>
+                    </page>
+                </notebook>
+            </xpath>
         </field>
     </record>
-
 </odoo>
