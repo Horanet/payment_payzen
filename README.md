@@ -11,6 +11,7 @@
 
 - Execute command :
 
+
 ```bash
-pip install -e git+https://github.com/Horanet/payment_payzen.git@11.0#egg=odoo11-addon-payment-payzen
+pip install "git+https://github.com/Horanet/payment_payzen.git@11.0#egg=odoo11-addon-payment-payzen&subdirectory=setup/payment_payzen"
 ```
