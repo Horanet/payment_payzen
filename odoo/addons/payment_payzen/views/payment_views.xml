@@ -15,4 +15,21 @@
             </xpath>
         </field>
     </record>
+
+    <record id="payzen_transaction_form" model="ir.ui.view">
+        <field name="name">Add data from PayZen acquirer</field>
+        <field name="model">payment.transaction</field>
+        <field name="inherit_id" ref="payment.transaction_form"/>
+        <field name="arch" type="xml">
+            <xpath expr='//notebook' position='inside'>
+                <page string="PayZen TX Details" attrs="{'invisible': [('is_payzen', '=', False)]}">
+                    <group>
+                        <field name="is_payzen" invisible="1"/>
+                        <field name="payzen_status"/>
+                        <field name="payzen_returned_data" readonly="1" groups="base.group_no_one"/>
+                    </group>
+                </page>
+            </xpath>
+        </field>
+    </record>
 </odoo>

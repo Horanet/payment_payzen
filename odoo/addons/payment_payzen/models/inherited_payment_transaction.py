@@ -1,9 +1,11 @@
 # coding: utf8
 
+import json
 import logging
 
 from odoo import _, api, fields, models
 from odoo.exceptions import ValidationError
+from odoo.osv import expression
 from odoo.tools.float_utils import float_compare
 
 _logger = logging.getLogger(__name__)
@@ -85,6 +87,51 @@ VADS_AUTH_RESULT = {
 class PayzenTransaction(models.Model):
     _inherit = 'payment.transaction'
 
+    payzen_status = fields.Char(
+        string='Status',
+        help='Status from PayZen WebService',
+    )
+
+    payzen_returned_data = fields.Text(
+        string='Returned data',
+        help='Data returned from PayZen WebService',
+    )
+
+    is_payzen = fields.Boolean(
+        compute='_compute_is_payzen',
+        search='_search_is_payzen',
+    )
+
+    @api.multi
+    @api.depends('acquirer_id')
+    def _compute_is_payzen(self):
+        """Define if a transaction is a PayZen transaction."""
+        for rec in self:
+            rec.is_payzen = rec.acquirer_id and rec.acquirer_id.provider == 'payzen'
+
+    @api.multi
+    def _search_is_payzen(self, operator, value):
+        """
+        Search for 'is_payzen' field.
+
+        :param operator: Operator used for research.
+        :type operator: str
+        :param value: Value used for research.
+        :type value: str
+        :return: Search domain
+        :rtype: array
+        """
+        if operator not in ['=', '!=']:
+            raise NotImplementedError("Got operator '%s' (expected '=' or '!=')" % operator)
+
+        search_domain = [('acquirer_id.provider', '=', 'payzen')]
+
+        # Negative domain if research on negation
+        if bool(operator not in expression.NEGATIVE_TERM_OPERATORS) != bool(value):
+            search_domain.insert(0, expression.NOT_OPERATOR)
+
+        return search_domain
+
     @api.model
     def _payzen_form_get_tx_from_data(self, data):
         """ Method called by form_feedback after the transaction
@@ -149,27 +196,87 @@ class PayzenTransaction(models.Model):
         """
         self.ensure_one()
 
-        values = {
-            'state_message': VADS_AUTH_RESULT.get(data.get('vads_auth_result')),
-            'acquirer_reference': data.get('vads_trans_uuid')
-        }
-
         transaction_status = data.get('vads_trans_status')
 
-        if transaction_status == 'AUTHORISED':
+        values = {
+            'state_message': VADS_AUTH_RESULT.get(data.get('vads_auth_result')),
+            'acquirer_reference': data.get('vads_trans_uuid'),
+            'payzen_status': transaction_status,
+            'payzen_returned_data': json.dumps(data, indent=4, separators=(',', ': ')),
+        }
+
+        if transaction_status == 'ACCEPTED':
+            # Statut d'une transaction de type VERIFICATION dont l'autorisation ou la demande de renseignement a été
+            # acceptée.
+            _logger.info('Validated Payzen payment for transaction %s: set as done' % self.reference)
+            values['state'] = 'done'
+            values['date_validate'] = fields.Datetime.now()
+        elif transaction_status == 'AUTHORISED':
+            # La transaction est acceptée et sera remise en banque automatiquement à la date prévue.
             _logger.info('Validated Payzen payment for transaction %s: set as done' % self.reference)
             values['state'] = 'done'
             values['date_validate'] = fields.Datetime.now()
         elif transaction_status == 'AUTHORISED_TO_VALIDATE':
+            # La transaction, créée en validation manuelle, est autorisée. Le marchand doit valider manuellement la
+            # transaction afin qu'elle soit remise en banque.
             _logger.info('Validated Payzen payment for transaction %s: set as done' % self.reference)
             values['state'] = 'authorized'
             values['date_validate'] = fields.Datetime.now()
+        elif transaction_status == 'CAPTURED':
+            # La transaction est remise en banque.
+            _logger.info('Validated Payzen payment for transaction %s: set as done' % self.reference)
+            values['state'] = 'authorized'
+            values['date_validate'] = fields.Datetime.now()
+        elif transaction_status == 'CANCELLED':
+            # La transaction est annulée par le marchand.
+            _logger.info('Validated Payzen payment for transaction %s: set as cancelled' % self.reference)
+            values['state'] = 'cancel'
         elif transaction_status == 'ABANDONED':
+            # Paiement abandonné par l’acheteur.
             _logger.info('Validated Payzen payment for transaction %s: set as cancelled' % self.reference)
             values['state'] = 'cancel'
         elif transaction_status == 'INITIAL':
+            # Ce statut est spécifique à tous les moyens de paiement nécessitant une intégration par formulaire de
+            # paiement en redirection.
             _logger.info('Validated Payzen payment for transaction %s: set as pending' % self.reference)
             values['state'] = 'pending'
+        elif transaction_status == 'UNDER_VERIFICATION':
+            # Pour les transactions PayPal, cette valeur signifie que PayPal retient la transaction pour suspicion de
+            # fraude.
+            # Le paiement restera dans l’onglet Transactions en cours jusqu'à ce que les vérifications soient achevées.
+            # La transaction prendra alors l'un des statuts suivants: AUTHORISED ou CANCELED.
+            _logger.info('Validated Payzen payment for transaction %s: set as pending' % self.reference)
+            values['state'] = 'pending'
+        elif transaction_status == 'WAITING_AUTHORISATION':
+            # Le délai de remise en banque est supérieur à la durée de validité de l'autorisation.
+            _logger.info('Validated Payzen payment for transaction %s: set as pending' % self.reference)
+            values['state'] = 'pending'
+        elif transaction_status == 'WAITING_AUTHORISATION_TO_VALIDATE':
+            # Le délai de remise en banque est supérieur à la durée de validité de l'autorisation.
+            _logger.info('Validated Payzen payment for transaction %s: set as pending' % self.reference)
+            values['state'] = 'pending'
+        elif transaction_status == 'CAPTURE_FAILED':
+            # La remise de la transaction a échoué.
+            _logger.info('Validated Payzen payment for transaction %s: set as error' % self.reference)
+            values['state'] = 'error'
+        elif transaction_status == 'EXPIRED':
+            # La date d'expiration de la demande d'autorisation est atteinte et le marchand n’a pas validé la
+            # transaction. Le porteur ne sera donc pas débité.
+            _logger.info('Validated Payzen payment for transaction %s: set as error' % self.reference)
+            values['state'] = 'error'
+        elif transaction_status == 'NOT_CREATED':
+            # La transaction n'est pas créée et n'est pas visible dans le Back Office Marchand.
+            _logger.info('Validated Payzen payment for transaction %s: set as error' % self.reference)
+            values['state'] = 'error'
+        elif transaction_status == 'REFUSED':
+            # La transaction est refusée.
+            _logger.info('Validated Payzen payment for transaction %s: set as error' % self.reference)
+            values['state'] = 'error'
+        elif transaction_status == 'SUSPENDED':
+            # La remise de la transaction est temporairement bloquée par l'acquéreur (AMEX GLOBAL ou SECURE TRADING).
+            # Une fois la remise traitée correctement, le statut de la transaction deviendra CAPTURED.
+            _logger.info('Validated Payzen payment for transaction %s: set as error' % self.reference)
+            values['state'] = 'error'
         else:
             _logger.info('Validated Payzen payment for transaction %s: set as error' % self.reference)
             values['state'] = 'error'
