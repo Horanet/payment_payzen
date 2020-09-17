@@ -15,6 +15,9 @@
             <field name="payzen_shop_id">dummy</field>
             <field name="payzen_test_cert">dummy</field>
             <field name="payzen_prod_cert">dummy</field>
+            <field name="payzen_api_user">dummy</field>
+            <field name="payzen_api_test_password">dummy</field>
+            <field name="payzen_api_prod_password">dummy</field>
             <field name="payzen_form_action_url">https://secure.payzen.eu/vads-payment/</field>
             <field name="description" type="html">
                 <p>

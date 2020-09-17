@@ -6,12 +6,19 @@
         <field name="inherit_id" ref="payment.acquirer_form"/>
         <field name="arch" type="xml">
             <xpath expr='//group[@name="acquirer"]' position='after'>
+              <group>
                 <group attrs="{'invisible': [('provider', '!=', 'payzen')]}">
                     <field name="payzen_shop_id" />
                     <field name="payzen_test_cert" />
                     <field name="payzen_prod_cert" />
                     <field name="payzen_form_action_url" />
                 </group>
+                <group>
+                    <field name="payzen_api_user">dummy</field>
+                    <field name="payzen_api_test_password">dummy</field>
+                    <field name="payzen_api_prod_password">dummy</field>
+                </group>
+              </group>
             </xpath>
         </field>
     </record>

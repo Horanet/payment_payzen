@@ -1,12 +1,18 @@
 # coding: utf8
 
+import base64
+import datetime
 import json
 import logging
+# from urllib2 import HTTPError, Request, urlopen
+import requests
 
 from odoo import _, api, fields, models
 from odoo.exceptions import ValidationError
 from odoo.osv import expression
+from odoo.tools import DEFAULT_SERVER_DATE_FORMAT
 from odoo.tools.float_utils import float_compare
+
 
 _logger = logging.getLogger(__name__)
 
@@ -83,6 +89,12 @@ VADS_AUTH_RESULT = {
     '912': _('Issuer not available'),
 }
 
+API_ENDPOINT = 'https://api.payzen.eu/api-payment'
+REQUEST_ORDER_GET_URL = '%s/V4/Order/Get' % API_ENDPOINT
+URLOPEN_TIMEOUT = 10
+PAYZEN_VALID_TX_STATUS = ['PAID']
+PAYZEN_PENDING_TX_STATUS = ['RUNNING']
+PAYZEN_INVALID_TX_STATUS = ['UNPAID']
 
 class PayzenTransaction(models.Model):
     _inherit = 'payment.transaction'
@@ -282,3 +294,72 @@ class PayzenTransaction(models.Model):
             values['state'] = 'error'
 
         return self.write(values)
+
+    def _payzen_s2s_validate(self):
+        tree = self._payzen_s2s_get_tx_status() or {}
+        return self._payzen_s2s_validate_tree(tree)
+
+    def _payzen_s2s_validate_tree(self, tree, tries=2):
+        if self.state not in ('draft', 'pending'):
+            _logger.info('Payzen: trying to validate an already validated tx (ref %s)', self.reference)
+            return True
+
+        status = tree.get('status', '')
+        if status in PAYZEN_VALID_TX_STATUS:
+            self.write({
+                'state': 'done',
+                'date_validate': datetime.date.today().strftime(DEFAULT_SERVER_DATE_FORMAT),
+            })
+            return True
+        elif status in PAYZEN_PENDING_TX_STATUS:
+            self.write({
+                'state': 'pending',
+            })
+            return True
+        elif status in PAYZEN_INVALID_TX_STATUS:
+            self.write({
+                'state': 'cancel',
+            })
+            return True
+
+        return False
+
+    def _payzen_s2s_get_tx_status(self):
+        if not self.sale_order_id:
+            return False
+
+        acquirer = self.acquirer_id
+
+        user = acquirer.payzen_api_user
+        password = False
+        if acquirer.environment == 'test':
+            password = acquirer.payzen_api_test_password
+        elif acquirer.environment == 'prod':
+            password = acquirer.payzen_api_prod_password
+
+        authorization = '%s:%s' % (user, password)
+        encoded_authorization = base64.b64encode(authorization)
+
+        response = requests.post(
+            REQUEST_ORDER_GET_URL,
+            data=json.dumps({"orderId": self.sale_order_id.name}),
+            headers={
+                'Content-Type': 'application/json',
+                'Authorization': 'Basic %s' % encoded_authorization,
+            })
+
+        if response.status_code != requests.codes.ok:
+            return False
+
+        data = json.loads(response.content)
+
+        if data['status'] == 'ERROR':
+            _logger.warn(_("Failed to call {} for payment transaction {}: {}".format(
+                REQUEST_ORDER_GET_URL, self.id, data['answer']['errorMessage']
+            )))
+            return False
+
+        if 'transactions' not in data['answer']:
+            return False
+
+        return data['answer']['transactions'][0]

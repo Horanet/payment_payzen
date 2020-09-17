@@ -22,6 +22,21 @@ class PayzenAcquirer(models.Model):
         default='https://secure.payzen.eu/vads-payment/',
         required_if_provider='payzen'
     )
+    payzen_api_user = fields.Char(
+        string="API User",
+        required_if_provider='payzen',
+        help="Menu Paramétrage > Boutique, onglet Clés d’API REST",
+    )
+    payzen_api_test_password = fields.Char(
+        string="API test password",
+        required_if_provider='payzen',
+        help="Menu Paramétrage > Boutique, onglet Clés d’API REST",
+    )
+    payzen_api_prod_password = fields.Char(
+        string="API prod password",
+        required_if_provider='payzen',
+        help="Menu Paramétrage > Boutique, onglet Clés d’API REST",
+    )
 
     @api.model
     def _get_feature_support(self):
@@ -116,3 +131,6 @@ class PayzenAcquirer(models.Model):
         payzen_tx_values['payzen_signature'] = self.payzen_generate_digital_sign(payzen_tx_values)
 
         return payzen_tx_values
+
+    def payzen_s2s_get_tx_status(self, transaction):
+        pass
