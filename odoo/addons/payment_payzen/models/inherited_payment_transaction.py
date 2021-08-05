@@ -1,7 +1,12 @@
 # coding: utf8
 
+import datetime
 import json
 import logging
+import requests
+from simplejson.scanner import JSONDecodeError
+from requests import ConnectionError, Timeout, TooManyRedirects
+from requests.auth import HTTPBasicAuth
 
 from odoo import _, api, fields, models
 from odoo.exceptions import ValidationError
@@ -147,20 +152,60 @@ class PayzenTransaction(models.Model):
             error_msg = 'Payzen: received bad data for reference {}'.format(reference)
 
             if not transactions:
-                error_msg += '; no order found'
+                error_msg += '; no payment transaction found'
             else:
-                error_msg += '; multiple order found'
+                error_msg += '; multiple payment transactions found'
 
             _logger.info(error_msg)
             raise ValidationError(error_msg)
 
-        signature = data.get('signature')
-        if signature != transactions.acquirer_id.payzen_generate_digital_sign(data):
-            error_msg = _('Payzen: signatures mismatch')
-            _logger.info(error_msg)
-            raise ValidationError(error_msg)
+        local_call = self.env.context.get('local_call', False)
+        if not local_call:
+            transactions._payzen_check_signature(data)
 
         return transactions
+
+    @api.model
+    def payzen_cron_check_draft_payment_transactions(self, minutes_min_check=7, hours_max_check=48):
+        """Cron task method used to check all recent draft transactions status with Payzen.
+
+        This method will get all draft payment transactions and try to get their
+        current Payzen status (like ipn return). We can use two param `minutes_min_check` and `hours_max_check
+
+        :param minutes_min_check: We will take transactions with a creation date greater than this time in minutes
+        :type minutes_min_check: int
+        :param hours_max_check: We will take transactions with a creation date lower than this time in hours
+        :type hours_max_check: int
+        """
+        # Search payzen acquirers
+        payzen_acquirers = self.env['payment.acquirer'].search([
+            ('provider', '=', 'payzen'),
+        ])
+
+        # Search waiting/draft payment transactions
+        payment_transaction_ids = self.env['payment.transaction'].search([
+            ('acquirer_id', 'in', payzen_acquirers.ids),
+            ('state', 'in', ['draft', 'pending']),
+            ('acquirer_reference', '=', False),
+            ('create_date', '>=', fields.Datetime.to_string(
+                datetime.datetime.now() - datetime.timedelta(hours=hours_max_check)
+            )),
+            ('create_date', '<=', fields.Datetime.to_string(
+                datetime.datetime.now() - datetime.timedelta(minutes=minutes_min_check)
+            )),
+        ], order="create_date asc")
+
+        if payment_transaction_ids:
+            _logger.info("Payzen Check: Processing of these transactions"
+                         " {}".format(payment_transaction_ids.mapped('reference')))
+
+        for payment_transaction_id in payment_transaction_ids:
+            try:
+                payment_transaction_id.action_payzen_check_transaction_status(wait=False)
+            except Exception as e:
+                # When raise exception we trace them in log but not lock the full checkout process
+                _logger.warning(e)
+                continue
 
     @api.multi
     def _payzen_form_get_invalid_parameters(self, data):
@@ -278,7 +323,94 @@ class PayzenTransaction(models.Model):
             _logger.info('Validated Payzen payment for transaction %s: set as error' % self.reference)
             values['state'] = 'error'
         else:
-            _logger.info('Validated Payzen payment for transaction %s: set as error' % self.reference)
+            _logger.info('Validated Payzen payment for transaction %s: set as error.'
+                         'Receive Status : %s' % self.reference, transaction_status)
             values['state'] = 'error'
 
         return self.write(values)
+
+    @api.multi
+    def action_payzen_check_transaction_status(self, wait=True):
+        """Function for check payzen transaction status and recall IPN route."""
+        self.ensure_one()
+
+        _logger.info("Payzen Check : Start checking {reference} status".format(reference=self.reference))
+
+        username = self.acquirer_id.payzen_shop_id
+        password = self.acquirer_id.payzen_get_api_password()
+        url = 'https://api.payzen.eu/api-payment/V4/Order/Get'
+
+        # Get status from web service
+        try:
+            response = requests.post(
+                url,
+                json={'orderId': self.reference},
+                headers={'Content-Type': 'application/json'},
+                auth=HTTPBasicAuth(username, password),
+                timeout=2,
+            )
+        except Timeout as e:
+            raise Exception("Payzen Check : Timeout error on {url}: {e}".format(url=url, e=e))
+        except ConnectionError as e:
+            raise Exception("Payzen Check : Connection error on {url}: {e}".format(url=url, e=e))
+        except TooManyRedirects as e:
+            raise Exception("Payzen Check : TooManyRedirects error on {url}: {e}".format(url=url, e=e))
+        except Exception as e:
+            raise Exception("Payzen Check : Unexpected error on {url}: {e}".format(url=url, e=e))
+
+        # Get json response from payload
+        try:
+            json_response = response.json()
+        except (ValueError, JSONDecodeError):
+            raise Exception("Payzen Check: An error occured on url {url}, JSON response can't be decoded."
+                            "Response from webservice :\n{text}".format(url=url, text=response.text))
+        # Get base url
+        base_url = self.env['ir.config_parameter'].sudo().get_param('web.base.url')
+        # Check if we need to wait response
+        timeout = None if wait else 30
+        # Call ipn callback with data
+        try:
+            requests.post(
+                "{base_url}/payment/payzen/return".format(base_url=base_url),
+                params={'local_call': True},
+                data=self._payzen_build_ipn_data_from_payzen_api(json_response),
+                timeout=timeout,
+            )
+        except Timeout:
+            pass
+        except Exception as e:
+            raise Exception("Payzen Check : failed to call ipn on url {url}: {e}".format(url=url, e=e))
+
+    @api.multi
+    def _payzen_check_signature(self, data):
+        self.ensure_one()
+        # Get signature compute by Payzen
+        signature = data.get('signature')
+        # Compare Payzen signature and our own compute signature
+        if signature != self.acquirer_id.payzen_generate_digital_sign(data):
+            error_msg = _("Payzen: signatures mismatch")
+            _logger.error(error_msg)
+            raise ValidationError(error_msg)
+
+    @staticmethod
+    def _payzen_build_ipn_data_from_payzen_api(data):
+        """Build Payzen IPN body from Payzen api data"""
+        answer = data.get('answer', {})
+        transactions = answer.get('transactions', [])
+
+        if len(transactions) < 1:
+            raise Exception("Payzen Check : Invalid data structure for build ipn body: {data}".format(data=data))
+
+        transaction = transactions[0]
+
+        return {
+            "vads_order_id": answer.get("orderId", ""),
+            "vads_trans_uuid": transaction.get("uuid", ""),
+            "vads_amount": transaction.get("amount", 0),
+            "vads_cust_id": transaction.get("customer", {}).get("reference", ""),
+            "vads_site_id": transaction.get("shopId", ""),
+            "vads_auth_result": transaction.get("detailedErrorCode", ""),
+            "vads_trans_status": transaction.get("detailedStatus", ""),
+        }
+
+    # endregion

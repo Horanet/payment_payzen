@@ -16,6 +16,8 @@
             <field name="payzen_test_cert">dummy</field>
             <field name="payzen_prod_cert">dummy</field>
             <field name="payzen_form_action_url">https://secure.payzen.eu/vads-payment/</field>
+            <field name="payzen_test_api_password">dummy</field>
+            <field name="payzen_prod_api_password">dummy</field>
             <field name="description" type="html">
                 <p>
                     Payzen is a brand developed by Lyra Network, leader in France in routing bank-transactions.
