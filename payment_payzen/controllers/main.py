@@ -1,18 +1,27 @@
+import logging
+import pprint
 import werkzeug
 
 from odoo import http
 from odoo.http import request
+from odoo.tools import safe_eval
+
+_logger = logging.getLogger()
 
 
 class PayzenController(http.Controller):
     @http.route(['/payment/payzen/return'], type='http', auth='public', csrf=False)
-    def payzen_return(self, **kw):
+    def payzen_return(self, local_call=None, **kw):
         """Route called after a transaction with payzen
 
-        :param kw: dict that contains POST values received from Payzen
+        :param boolean local_call: Define is was call from local server or by Payzen
+        :param dict kw: dict that contains POST values received from Payzen
         :return: response object
         """
+        _logger.info(f'PayZen: entering IPN form_feedback with post data {pprint.pformat(kw)}')
 
-        request.env['payment.transaction'].form_feedback(kw, 'payzen')
+        local_call = safe_eval(local_call or 'False')
+
+        request.env['payment.transaction'].with_context(local_call=local_call).form_feedback(kw, 'payzen')
 
         return werkzeug.utils.redirect('/')

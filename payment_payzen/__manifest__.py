@@ -24,6 +24,7 @@
         'views/payment_views.xml',
         'views/payment_payzen_templates.xml',
 
+        'data/cron_check_waiting_payzen_transactions.xml',
         'data/payment_acquirer.xml',
     ],
     'demo': [],
