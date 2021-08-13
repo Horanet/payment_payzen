@@ -364,6 +364,17 @@ class PayzenTransaction(models.Model):
         except (ValueError, JSONDecodeError):
             raise Exception("Payzen Check: An error occured on url {url}, JSON response can't be decoded."
                             "Response from webservice :\n{text}".format(url=url, text=response.text))
+
+        # Check transaction as been received by payzen before build our own ipn data
+        # SEE https://payzen.io/fr-FR/rest/V4.0/api/errors-reference.html
+        if json_response.get('answer', {}).get('errorCode', '') == 'PSP_010':
+            self.write({
+                'state': 'error',
+                'payzen_status': 'PSP_010',
+                'payzen_returned_data': json.dumps(json_response, indent=4, separators=(',', ': ')),
+            })
+            return
+
         # Get base url
         base_url = self.env['ir.config_parameter'].sudo().get_param('web.base.url')
         # Check if we need to wait response
