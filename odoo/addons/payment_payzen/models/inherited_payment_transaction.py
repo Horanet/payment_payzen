@@ -376,13 +376,14 @@ class PayzenTransaction(models.Model):
             return
 
         # Get base url
-        base_url = self.env['ir.config_parameter'].sudo().get_param('web.base.url')
+        report_url = self.env['ir.config_parameter'].sudo().get_param('report.url')
         # Check if we need to wait response
         timeout = None if wait else 30
         # Call ipn callback with data
         try:
             requests.post(
-                "{base_url}/payment/payzen/local/return".format(base_url=base_url),
+                "{report_url}/payment/payzen/local/return".format(report_url=report_url),
+                params={'local_call': True},
                 data=self._payzen_build_ipn_data_from_payzen_api(json_response),
                 timeout=timeout,
             )
