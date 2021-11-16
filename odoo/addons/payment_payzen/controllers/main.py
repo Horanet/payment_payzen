@@ -20,10 +20,20 @@ class PayzenController(http.Controller):
         :param dict kw: dict that contains POST values received from Payzen
         :return: response object
         """
-        _logger.info('PayZen: entering IPN form_feedback with post data {data}'.format(data=pprint.pformat(kw)))
+        _logger.info('PayZen: entering IPN form_feedback with post data')
 
         local_call = safe_eval(local_call or 'False')
 
         request.env['payment.transaction'].with_context(local_call=local_call).form_feedback(kw, 'payzen')
 
         return werkzeug.utils.redirect('/')
+
+    @http.route(['/payment/payzen/local/return/'], type='http', auth='public', csrf=False)
+    def payzen_return(self, **kw):
+        """Route called after a transaction with payzen
+
+        :param dict kw: dict that contains POST values received from Payzen
+        :return: response object
+        """
+
+        return self.payzen_return(local_call=True, **kw)

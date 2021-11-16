@@ -382,12 +382,13 @@ class PayzenTransaction(models.Model):
         # Call ipn callback with data
         try:
             requests.post(
-                "{base_url}/payment/payzen/return".format(base_url=base_url),
-                params={'local_call': True},
+                "{base_url}/payment/payzen/local/return".format(base_url=base_url),
                 data=self._payzen_build_ipn_data_from_payzen_api(json_response),
                 timeout=timeout,
             )
-        except Timeout:
+        except Timeout as e:
+            if not wait:
+                _logger.error("Payzen Check : timeout to call url {url}: {e}".format(url=url, e=e))
             pass
         except Exception as e:
             raise Exception("Payzen Check : failed to call ipn on url {url}: {e}".format(url=url, e=e))
