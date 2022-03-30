@@ -22,6 +22,8 @@ class PayzenAcquirer(models.Model):
         default='https://secure.payzen.eu/vads-payment/',
         required_if_provider='payzen'
     )
+    payzen_test_api_password = fields.Char(string="Api Test Password", required_if_provider='payzen')
+    payzen_prod_api_password = fields.Char(string="Api Prod Password", required_if_provider='payzen')
 
     @api.model
     def _get_feature_support(self):
@@ -116,3 +118,9 @@ class PayzenAcquirer(models.Model):
         payzen_tx_values['payzen_signature'] = self.payzen_generate_digital_sign(payzen_tx_values)
 
         return payzen_tx_values
+
+    @api.multi
+    def payzen_get_api_password(self):
+        """Return api password define on acquirer in function of shop mode"""
+        self.ensure_one()
+        return self.payzen_prod_api_password if self.environment == 'prod' else self.payzen_test_api_password
