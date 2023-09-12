@@ -36,7 +36,7 @@ class PayzenAcquirer(models.Model):
                         object
         """
         res = super(PayzenAcquirer, self)._get_feature_support()
-        res['authorize'].append('paypal')
+        res['authorize'].append('payzen')
         return res
 
     @api.multi
