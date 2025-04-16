@@ -11,7 +11,35 @@
                     <field name="payzen_test_cert" />
                     <field name="payzen_prod_cert" />
                     <field name="payzen_form_action_url" />
+                    <field name="payzen_test_api_password" />
+                    <field name="payzen_prod_api_password" />
                 </group>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="payzen_transaction_form" model="ir.ui.view">
+        <field name="name">Add data/action from PayZen acquirer</field>
+        <field name="model">payment.transaction</field>
+        <field name="inherit_id" ref="payment.transaction_form"/>
+        <field name="arch" type="xml">
+            <!-- Add button to test transaction on acquirer site -->
+            <xpath expr="//header" position="inside">
+                <button name="action_payzen_check_transaction_status" type="object"
+                    class="oe_read_only"
+                    string="Check Payzen transaction status"
+                    attrs="{'invisible': ['|', ('state','not in',['draft','pending']), ('provider', '!=', 'payzen')]}"
+                    />
+            </xpath>
+            <xpath expr='//sheet' position='inside'>
+                <notebook>
+                    <page string="PayZen TX Details" attrs="{'invisible': [('provider', '!=', 'payzen')]}">
+                        <group>
+                            <field name="payzen_status"/>
+                            <field name="payzen_returned_data" readonly="1" groups="base.group_no_one"/>
+                        </group>
+                    </page>
+                </notebook>
             </xpath>
         </field>
     </record>

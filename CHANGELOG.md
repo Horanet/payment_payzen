@@ -6,6 +6,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 ### Added
+- [Imp] Add PayZen status process and fields to show data from PayZen WebService
 
 ### Fix
 
